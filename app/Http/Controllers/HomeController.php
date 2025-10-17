@@ -116,6 +116,9 @@ class HomeController extends Controller
                 'file_url' => $post->file_url,
                 'file_size' => $post->formatted_file_size,
                 'file_type' => $post->file_type,
+                // User interactions
+                'is_liked' => $post->isLikedBy(auth()->user()),
+                'is_bookmarked' => $post->isBookmarkedBy(auth()->user()),
             ],
             'relatedPosts' => Post::query()
                 ->published()
@@ -185,5 +188,26 @@ class HomeController extends Controller
             ->toArray();
 
         return $allTags;
+    }
+
+    public function toggleLike(Post $post): \Illuminate\Http\JsonResponse
+    {
+        $user = auth()->user();
+        $isLiked = $post->toggleLike($user);
+
+        return response()->json([
+            'is_liked' => $isLiked,
+            'likes_count' => $post->fresh()->likes_count,
+        ]);
+    }
+
+    public function toggleBookmark(Post $post): \Illuminate\Http\JsonResponse
+    {
+        $user = auth()->user();
+        $isBookmarked = $post->toggleBookmark($user);
+
+        return response()->json([
+            'is_bookmarked' => $isBookmarked,
+        ]);
     }
 }
