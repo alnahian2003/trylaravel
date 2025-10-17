@@ -22,6 +22,8 @@ const likesCount = ref(props.post.likes_count);
 const isLiking = ref(false);
 const isBookmarking = ref(false);
 const showShareModal = ref(false);
+const showReportModal = ref(false);
+const isReporting = ref(false);
 
 const currentUrl = computed(() => window.location.href);
 
@@ -175,6 +177,44 @@ const copyToClipboard = async () => {
             alert('Could not copy link. Please copy manually: ' + url);
         }
         document.body.removeChild(textArea);
+    }
+};
+
+const openReportModal = () => {
+    showReportModal.value = true;
+};
+
+const closeReportModal = () => {
+    showReportModal.value = false;
+};
+
+const submitReport = async (reportData) => {
+    if (!isAuthenticated.value || isReporting.value) return;
+    
+    isReporting.value = true;
+    
+    try {
+        const response = await fetch(route('posts.report', props.post.slug), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(reportData)
+        });
+        
+        if (response.ok) {
+            alert('Report submitted successfully. Thank you for helping us improve the platform.');
+            closeReportModal();
+        } else {
+            alert('Failed to submit report. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error submitting report:', error);
+        alert('Failed to submit report. Please try again.');
+    } finally {
+        isReporting.value = false;
     }
 };
 
@@ -363,7 +403,7 @@ onUnmounted(() => {
                                 {{ isBookmarked ? 'Saved' : 'Save for Later' }}
                             </button>
                         </div>
-                        <button v-if="isAuthenticated" class="text-gray-600 hover:text-gray-900 px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors font-semibold">
+                        <button v-if="isAuthenticated" @click="openReportModal" class="text-gray-600 hover:text-gray-900 px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors font-semibold">
                             <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
                             </svg>
@@ -587,6 +627,60 @@ onUnmounted(() => {
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- Report Issue Modal -->
+        <div v-if="showReportModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click="closeReportModal">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full" @click.stop>
+                <!-- Header -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Report Issue</h3>
+                    <button @click="closeReportModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Form -->
+                <form @submit.prevent="submitReport({ 
+                    type: $event.target.type.value, 
+                    description: $event.target.description.value 
+                })" class="p-6">
+                    <div class="mb-4">
+                        <label for="reportType" class="block text-sm font-medium text-gray-700 mb-2">Issue Type</label>
+                        <select name="type" id="reportType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                            <option value="">Select an issue type</option>
+                            <option value="spam">Spam or unwanted content</option>
+                            <option value="inappropriate">Inappropriate content</option>
+                            <option value="copyright">Copyright violation</option>
+                            <option value="misinformation">Misinformation</option>
+                            <option value="broken">Broken link or technical issue</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="reportDescription" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea 
+                            name="description" 
+                            id="reportDescription" 
+                            rows="4" 
+                            required
+                            placeholder="Please provide more details about the issue..."
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button type="button" @click="closeReportModal" class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit" :disabled="isReporting" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                            {{ isReporting ? 'Submitting...' : 'Submit Report' }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

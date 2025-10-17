@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PostType;
+use App\Http\Requests\ReportPostRequest;
 use App\Models\Post;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -208,6 +210,45 @@ class HomeController extends Controller
 
         return response()->json([
             'is_bookmarked' => $isBookmarked,
+        ]);
+    }
+
+    public function reportPost(ReportPostRequest $request, Post $post): \Illuminate\Http\JsonResponse
+    {
+        $user = auth()->user();
+
+        // Check if user has already reported this post
+        $existingReport = Report::query()
+            ->where('user_id', $user->id)
+            ->where('post_id', $post->id)
+            ->where('type', $request->type)
+            ->exists();
+
+        if ($existingReport) {
+            return response()->json([
+                'message' => 'You have already reported this post for this reason.',
+            ], 422);
+        }
+
+        Report::create([
+            'user_id' => $user->id,
+            'post_id' => $post->id,
+            'type' => $request->type,
+            'description' => $request->description,
+        ]);
+
+        \Log::info('Post reported', [
+            'post_id' => $post->id,
+            'post_title' => $post->title,
+            'reporter_id' => $user->id,
+            'reporter_email' => $user->email,
+            'report_type' => $request->type,
+            'description' => $request->description,
+            'reported_at' => now(),
+        ]);
+
+        return response()->json([
+            'message' => 'Report submitted successfully. Thank you for helping keep our community safe.',
         ]);
     }
 }
