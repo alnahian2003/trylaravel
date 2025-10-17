@@ -63,9 +63,9 @@ class BrowserFactory
         // Add custom args if provided, merging with defaults
         $customArgs = $config['args'] ?? [];
         $args = array_unique(array_merge($defaultArgs, $customArgs));
-        foreach ($args as $arg) {
-            $browser->addChromiumArgument($arg);
-        }
+        
+        // Use setOption method to ensure args are properly set
+        $browser->setOption('args', $args);
 
         // Try to use system Chrome if available (both local and production)
         $chromePaths = [
@@ -97,5 +97,34 @@ class BrowserFactory
         } catch (\Exception $e) {
             throw new \RuntimeException("Failed to scrape URL: {$url}. Error: " . $e->getMessage(), 0, $e);
         }
+    }
+
+    public static function debugArgs(array $config = []): array
+    {
+        $defaultArgs = [
+            '--no-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--disable-extensions',
+            '--disable-plugins',
+            '--disable-default-apps',
+            '--disable-sync',
+            '--metrics-recording-only',
+            '--no-first-run',
+            '--safebrowsing-disable-auto-update',
+            '--disable-crash-reporter',
+            '--disable-in-process-stack-traces',
+            '--disable-logging',
+            '--log-level=3',
+            '--silent',
+        ];
+
+        $customArgs = $config['args'] ?? [];
+        return array_unique(array_merge($defaultArgs, $customArgs));
     }
 }

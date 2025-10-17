@@ -170,6 +170,11 @@ class DiagnoseScraper extends Command
 
         // 9. Test BrowserFactory with production settings
         $this->info('9. Production Browser Test');
+        
+        // Debug: Show what args will be used
+        $debugArgs = BrowserFactory::debugArgs([]);
+        $this->line("   Debug - Chrome args: " . implode(', ', array_slice($debugArgs, 0, 3)) . "... (" . count($debugArgs) . " total)");
+        
         try {
             $html = BrowserFactory::scrapeUrl('https://example.com', [
                 'timeout' => 15000,
