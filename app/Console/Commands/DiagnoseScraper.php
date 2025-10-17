@@ -139,9 +139,8 @@ class DiagnoseScraper extends Command
         // 7. Test Browsershot
         $this->info('7. Browsershot Test');
         try {
-            $browser = Browsershot::html('<h1>Test</h1>')
-                ->timeout(30)
-                ->setOption('args', ['--no-sandbox', '--disable-dev-shm-usage']);
+            $browser = BrowserFactory::create(['timeout' => 30000]);
+            $browser->html('<h1>Test</h1>');
                 
             $pdf = $browser->pdf();
             if ($pdf && strlen($pdf) > 100) {

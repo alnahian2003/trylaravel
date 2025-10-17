@@ -66,20 +66,18 @@ class BrowserFactory
             $browser->addChromiumArgument($arg);
         }
 
-        // In production, try to use system Chrome
-        if (app()->environment('production')) {
-            $chromePaths = [
-                '/usr/bin/chromium-browser',
-                '/usr/bin/google-chrome',
-                '/usr/bin/chromium',
-                '/opt/google/chrome/chrome',
-            ];
+        // Try to use system Chrome if available (both local and production)
+        $chromePaths = [
+            '/usr/bin/chromium-browser',
+            '/usr/bin/google-chrome',
+            '/usr/bin/chromium',
+            '/opt/google/chrome/chrome',
+        ];
 
-            foreach ($chromePaths as $path) {
-                if (file_exists($path)) {
-                    $browser->setChromePath($path);
-                    break;
-                }
+        foreach ($chromePaths as $path) {
+            if (file_exists($path)) {
+                $browser->setChromePath($path);
+                break;
             }
         }
 
