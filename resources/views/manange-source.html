@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Sources - LaravelSense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased bg-gray-50 font-sans">
+
+    <!-- Header -->
+    <header class="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">LaravelSense</span>
+                    </div>
+
+                    <nav class="hidden md:flex items-center space-x-6">
+                        <a href="index.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Feed</a>
+                        <a href="explore.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Explore</a>
+                        <a href="library.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Library</a>
+                        <a href="manange-source.html" class="text-red-600 font-semibold border-b-2 border-red-600 pb-1">
+                            <i class="fas fa-rss mr-2"></i>Sources
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <button class="text-gray-600 hover:text-gray-900 transition-colors p-2 hover:bg-gray-100 rounded-xl">
+                            <i class="fas fa-bell text-lg"></i>
+                        </button>
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 hover:bg-gray-100 rounded-xl px-3 py-2 transition-colors">
+                                <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">A</div>
+                                <i class="fas fa-chevron-down text-gray-600 text-xs"></i>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-2">
+                                    <a href="setting.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                        Settings
+                                    </a>
+                                    <a href="index.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-home mr-3 text-gray-400"></i>
+                                        Home
+                                    </a>
+                                    <div class="border-t border-gray-200 my-2"></div>
+                                    <a href="#logout" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
+                                        <i class="fas fa-sign-out-alt mr-3"></i>
+                                        Sign Out
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-3">
+                        <i class="fas fa-rss text-orange-600 mr-3"></i>
+                        Manage Sources
+                    </h1>
+                    <p class="text-xl text-gray-600">Control which RSS feeds appear in your personalized digest</p>
+                </div>
+                <button onclick="document.getElementById('addSourceModal').classList.remove('hidden')" class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    Add New Source
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-3 gap-8 mb-8">
+            <div class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2 font-medium">Active Sources</p>
+                        <p class="text-4xl font-bold text-gray-900">12</p>
+                    </div>
+                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2 font-medium">New Articles Today</p>
+                        <p class="text-4xl font-bold text-gray-900">47</p>
+                    </div>
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-newspaper text-blue-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2 font-medium">Last Updated</p>
+                        <p class="text-4xl font-bold text-gray-900">5m</p>
+                    </div>
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-sync-alt text-purple-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sources Table -->
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-lg">
+            <div class="px-6 py-6 border-b border-gray-200 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-900">Your Sources (12)</h2>
+                <div class="flex items-center space-x-3">
+                    <input type="search" placeholder="Search sources..." class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Source</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">URL</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Articles</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Last Updated</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <!-- Source Row 1 -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://via.placeholder.com/40" alt="Laravel News" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="font-semibold text-gray-900">Laravel News</p>
+                                        <p class="text-xs text-gray-500">laravel-news.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="https://laravel-news.com/feed" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 hover:underline">
+                                    laravel-news.com/feed
+                                    <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                    <i class="fas fa-check-circle mr-1"></i>Active
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-900 font-medium">248</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-600">5 min ago</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="text-red-600 hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Source Row 2 -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://via.placeholder.com/40" alt="Freek.dev" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="font-semibold text-gray-900">Freek Van der Herten</p>
+                                        <p class="text-xs text-gray-500">freek.dev</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="https://freek.dev/feed" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 hover:underline">
+                                    freek.dev/feed
+                                    <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                    <i class="fas fa-check-circle mr-1"></i>Active
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-900 font-medium">156</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-600">12 min ago</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="text-red-600 hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Source Row 3 -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://via.placeholder.com/40" alt="Laravel Daily" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="font-semibold text-gray-900">Laravel Daily</p>
+                                        <p class="text-xs text-gray-500">laraveldaily.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="https://laraveldaily.com/feed" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 hover:underline">
+                                    laraveldaily.com/feed
+                                    <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                    <i class="fas fa-check-circle mr-1"></i>Active
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-900 font-medium">312</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-600">18 min ago</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="text-red-600 hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Source Row 4 - Error State -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://via.placeholder.com/40" alt="Custom Blog" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="font-semibold text-gray-900">My Custom Blog</p>
+                                        <p class="text-xs text-gray-500">example.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="https://example.com/feed" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 hover:underline">
+                                    example.com/feed
+                                    <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>Error
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-400 font-medium">-</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-600">2 hours ago</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="text-red-600 hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Source Row 5 -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://via.placeholder.com/40" alt="Matt Stauffer" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="font-semibold text-gray-900">Matt Stauffer</p>
+                                        <p class="text-xs text-gray-500">mattstauffer.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="https://mattstauffer.com/feed" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 hover:underline">
+                                    mattstauffer.com/feed
+                                    <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                    <i class="fas fa-check-circle mr-1"></i>Active
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-900 font-medium">89</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-sm text-gray-600">45 min ago</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="text-red-600 hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Source Modal -->
+    <div id="addSourceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Add New Source</h2>
+                <button onclick="document.getElementById('addSourceModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-xl">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">RSS Feed URL</label>
+                    <input type="url" placeholder="https://example.com/feed" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                    <p class="mt-3 text-sm text-gray-500">Paste the RSS feed URL from any Laravel blog or website</p>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-8">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-600 text-xl mr-4 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-blue-900 mb-2">How to find RSS feeds</h4>
+                            <p class="text-sm text-blue-800">Look for RSS icons or links labeled "Feed", "RSS", or "Subscribe". Usually found in website footers.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button type="button" onclick="document.getElementById('addSourceModal').classList.add('hidden')" class="flex-1 px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        Add Source
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

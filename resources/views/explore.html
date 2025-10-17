@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - LaravelSense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased bg-gray-50 font-sans">
+
+    <!-- Header -->
+    <header class="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shadow-sm">
+                        <i class="fas fa-bolt text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">LaravelSense</span>
+                </div>
+
+                <!-- Search -->
+                <div class="flex-1 max-w-2xl mx-8">
+                    <div class="relative">
+                        <input 
+                            type="search" 
+                            placeholder="Search Laravel content..." 
+                            class="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all text-sm"
+                        >
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex items-center space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Feed</a>
+                    <a href="library.html" class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium">Bookmarks</a>
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 hover:bg-gray-100 rounded-lg px-3 py-2 transition-colors">
+                            <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                U
+                            </div>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            <div class="py-2">
+                                <a href="setting.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+                                    <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <a href="manange-source.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+                                    <i class="fas fa-rss mr-3 text-gray-400"></i>
+                                    Manage Sources
+                                </a>
+                                <div class="border-t border-gray-200 my-2"></div>
+                                <a href="index.html" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors text-sm">
+                                    <i class="fas fa-sign-out-alt mr-3"></i>
+                                    Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Page Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+                Discover Laravel Content
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Explore curated articles, videos, and podcasts from the best Laravel content creators
+            </p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center space-x-1 bg-gray-100 p-1 rounded-xl w-fit mx-auto mb-8">
+                <button class="px-6 py-2.5 bg-white text-gray-900 rounded-lg font-medium shadow-sm text-sm">
+                    All Content
+                </button>
+                <button class="px-6 py-2.5 text-gray-600 hover:text-gray-900 rounded-lg font-medium text-sm transition-colors">
+                    Articles
+                </button>
+                <button class="px-6 py-2.5 text-gray-600 hover:text-gray-900 rounded-lg font-medium text-sm transition-colors">
+                    Videos
+                </button>
+                <button class="px-6 py-2.5 text-gray-600 hover:text-gray-900 rounded-lg font-medium text-sm transition-colors">
+                    Podcasts
+                </button>
+            </div>
+
+            <!-- Topic Pills -->
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <button class="bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-red-200 transition-colors">
+                    Security
+                </button>
+                <button class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors">
+                    Testing
+                </button>
+                <button class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-green-200 transition-colors">
+                    Performance
+                </button>
+                <button class="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-purple-200 transition-colors">
+                    APIs
+                </button>
+                <button class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-yellow-200 transition-colors">
+                    Architecture
+                </button>
+                <button class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-200 transition-colors">
+                    Deployment
+                </button>
+            </div>
+        </div>
+
+        <!-- Articles Grid -->
+        <div class="space-y-6">
+            <!-- Featured Article (Large Card) -->
+            <article class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                <div class="md:flex">
+                    <div class="md:w-2/5 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center p-8">
+                        <div class="text-center">
+                            <i class="fas fa-fire text-red-600 text-6xl mb-4"></i>
+                            <p class="text-red-800 font-bold text-lg">TRENDING NOW</p>
+                        </div>
+                    </div>
+                    <div class="md:w-3/5 p-8">
+                        <div class="flex items-center space-x-2 mb-4">
+                            <span class="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full font-semibold">
+                                <i class="fas fa-exclamation-circle mr-1"></i>SECURITY
+                            </span>
+                            <span class="text-gray-500 text-sm">•</span>
+                            <span class="text-gray-600 text-sm">12 min read</span>
+                            <span class="text-gray-500 text-sm">•</span>
+                            <span class="text-gray-600 text-sm">Advanced</span>
+                        </div>
+
+                        <h2 class="text-3xl font-bold text-gray-900 mb-3 hover:text-red-600 cursor-pointer">
+                            Critical SQL Injection Vulnerability Discovered in Laravel 11.x
+                        </h2>
+
+                        <p class="text-gray-600 mb-4 text-lg">
+                            A critical security vulnerability has been identified in Laravel's Eloquent ORM affecting versions 11.0 to 11.2. Learn how to patch your applications immediately.
+                        </p>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-2">
+                                    <img src="https://via.placeholder.com/32" alt="Source" class="w-8 h-8 rounded-full">
+                                    <span class="font-semibold text-gray-900">Laravel News</span>
+                                </div>
+                                <span class="text-sm text-gray-500">2 hours ago</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="flex items-center space-x-2 text-red-600 hover:text-red-700 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors font-medium">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Add Source</span>
+                                </button>
+                                <button class="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors">
+                                    Read Article
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Regular Articles -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Article 1 -->
+                <article class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Source" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="font-semibold text-gray-900">Freek Van der Herten</p>
+                                <p class="text-xs text-gray-500">freek.dev</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-3">
+                        <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-semibold">
+                            <i class="fas fa-flask mr-1"></i>TESTING
+                        </span>
+                        <span class="text-gray-500 text-sm">6 min read</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-red-600 cursor-pointer">
+                        Advanced Mocking Techniques in Pest PHP
+                    </h3>
+
+                    <p class="text-gray-600 text-sm mb-4">
+                        Deep dive into mocking external services, APIs, and third-party dependencies using Pest's powerful mocking features.
+                    </p>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div class="flex items-center space-x-3 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <i class="far fa-heart mr-1"></i>234
+                            </span>
+                            <span class="flex items-center">
+                                <i class="far fa-comment mr-1"></i>18
+                            </span>
+                            <span>5 hours ago</span>
+                        </div>
+                        <button class="text-red-600 hover:text-red-700 font-medium text-sm flex items-center">
+                            <i class="fas fa-plus-circle mr-1"></i>
+                            Add Source
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Article 2 -->
+                <article class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Source" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="font-semibold text-gray-900">Aaron Francis</p>
+                                <p class="text-xs text-gray-500">aaronfrancis.com</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-3">
+                        <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-semibold">
+                            <i class="fas fa-tachometer-alt mr-1"></i>PERFORMANCE
+                        </span>
+                        <span class="text-gray-500 text-sm">15 min read</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-red-600 cursor-pointer">
+                        Database Performance: Beyond the Basics
+                    </h3>
+
+                    <p class="text-gray-600 text-sm mb-4">
+                        Learn advanced database optimization techniques including query planning, index strategies, and connection pooling.
+                    </p>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div class="flex items-center space-x-3 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <i class="far fa-heart mr-1"></i>456
+                            </span>
+                            <span class="flex items-center">
+                                <i class="far fa-comment mr-1"></i>32
+                            </span>
+                            <span>1 day ago</span>
+                        </div>
+                        <button class="text-red-600 hover:text-red-700 font-medium text-sm flex items-center">
+                            <i class="fas fa-plus-circle mr-1"></i>
+                            Add Source
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Article 3 -->
+                <article class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Source" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="font-semibold text-gray-900">Laravel Daily</p>
+                                <p class="text-xs text-gray-500">laraveldaily.com</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-3">
+                        <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full font-semibold">
+                            <i class="fas fa-plug mr-1"></i>APIS
+                        </span>
+                        <span class="text-gray-500 text-sm">10 min read</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-red-600 cursor-pointer">
+                        Building Resilient APIs with Circuit Breakers
+                    </h3>
+
+                    <p class="text-gray-600 text-sm mb-4">
+                        Protect your application from cascading failures by implementing circuit breaker patterns in your API integrations.
+                    </p>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div class="flex items-center space-x-3 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <i class="far fa-heart mr-1"></i>189
+                            </span>
+                            <span class="flex items-center">
+                                <i class="far fa-comment mr-1"></i>24
+                            </span>
+                            <span>2 days ago</span>
+                        </div>
+                        <button class="text-red-600 hover:text-red-700 font-medium text-sm flex items-center">
+                            <i class="fas fa-plus-circle mr-1"></i>
+                            Add Source
+                        </button>
+                    </div>
+                </article>
+
+                <!-- Article 4 -->
+                <article class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Source" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="font-semibold text-gray-900">Matt Stauffer</p>
+                                <p class="text-xs text-gray-500">mattstauffer.com</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-3">
+                        <span class="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full font-semibold">
+                            <i class="fas fa-sitemap mr-1"></i>ARCHITECTURE
+                        </span>
+                        <span class="text-gray-500 text-sm">18 min read</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-red-600 cursor-pointer">
+                        Domain-Driven Design in Laravel Applications
+                    </h3>
+
+                    <p class="text-gray-600 text-sm mb-4">
+                        A practical guide to implementing DDD principles in Laravel without overcomplicating your codebase.
+                    </p>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div class="flex items-center space-x-3 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <i class="far fa-heart mr-1"></i>512
+                            </span>
+                            <span class="flex items-center">
+                                <i class="far fa-comment mr-1"></i>47
+                            </span>
+                            <span>3 days ago</span>
+                        </div>
+                        <button class="text-red-600 hover:text-red-700 font-medium text-sm flex items-center">
+                            <i class="fas fa-plus-circle mr-1"></i>
+                            Add Source
+                        </button>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Load More -->
+            <div class="text-center py-8">
+                <button class="bg-white border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-red-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Load More Articles
+                </button>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

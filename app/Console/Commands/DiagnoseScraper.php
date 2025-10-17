@@ -173,8 +173,7 @@ class DiagnoseScraper extends Command
         try {
             $html = BrowserFactory::scrapeUrl('https://example.com', [
                 'timeout' => 15000,
-                'user_agent' => 'Mozilla/5.0 (compatible; TestBot/1.0)',
-                'args' => ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+                'user_agent' => 'Mozilla/5.0 (compatible; TestBot/1.0)'
             ]);
             
             if ($html && strlen($html) > 100) {

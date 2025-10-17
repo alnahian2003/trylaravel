@@ -60,8 +60,9 @@ class BrowserFactory
             '--silent',
         ];
 
-        // Add custom args if provided
-        $args = $config['args'] ?? $defaultArgs;
+        // Add custom args if provided, merging with defaults
+        $customArgs = $config['args'] ?? [];
+        $args = array_unique(array_merge($defaultArgs, $customArgs));
         foreach ($args as $arg) {
             $browser->addChromiumArgument($arg);
         }

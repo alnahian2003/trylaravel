@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experience Level - LaravelSense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased bg-gray-50 font-sans">
+
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white/95 backdrop-blur-sm border-b border-gray-200">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">LaravelSense</span>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        Step 2 of 3
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="bg-white border-b border-gray-200">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-2 bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500" style="width: 66%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 py-16 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16">
+                    <h1 class="text-5xl font-bold text-gray-900 mb-6">What's your current level?</h1>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">This helps us recommend the right content difficulty and complexity for your learning journey</p>
+                </div>
+
+                <!-- Level Options -->
+                <div class="space-y-8 mb-12">
+                    <!-- Beginner -->
+                    <label class="block cursor-pointer group">
+                        <input type="radio" name="level" value="beginner" class="peer hidden">
+                        <div class="bg-white border-2 border-gray-200 rounded-2xl p-8 transition-all duration-200 hover:border-red-300 hover:shadow-lg peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:shadow-lg">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mr-6">
+                                    <div class="w-8 h-8 rounded-full border-2 border-gray-300 peer-checked:border-red-600 peer-checked:bg-red-600 flex items-center justify-center transition-all">
+                                        <i class="fas fa-check text-white text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-4">
+                                        <h3 class="text-2xl font-bold text-gray-900 mr-4">Learning Laravel</h3>
+                                        <span class="bg-green-100 text-green-700 text-sm px-3 py-1.5 rounded-full font-semibold">BEGINNER</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-6 text-lg">Less than 1 year of experience with Laravel</p>
+                                    <ul class="text-gray-600 space-y-3">
+                                        <li class="flex items-center"><i class="fas fa-check text-green-600 mr-3"></i>Getting comfortable with MVC</li>
+                                        <li class="flex items-center"><i class="fas fa-check text-green-600 mr-3"></i>Learning Eloquent basics</li>
+                                        <li class="flex items-center"><i class="fas fa-check text-green-600 mr-3"></i>Building your first projects</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Intermediate -->
+                    <label class="block cursor-pointer group">
+                        <input type="radio" name="level" value="intermediate" class="peer hidden">
+                        <div class="bg-white border-2 border-gray-200 rounded-2xl p-8 transition-all duration-200 hover:border-red-300 hover:shadow-lg peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:shadow-lg">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mr-6">
+                                    <div class="w-8 h-8 rounded-full border-2 border-gray-300 peer-checked:border-red-600 peer-checked:bg-red-600 flex items-center justify-center transition-all">
+                                        <i class="fas fa-check text-white text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-4">
+                                        <h3 class="text-2xl font-bold text-gray-900 mr-4">Shipping Products</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1.5 rounded-full font-semibold">INTERMEDIATE</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-6 text-lg">1-3 years of experience, shipping production apps</p>
+                                    <ul class="text-gray-600 space-y-3">
+                                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-3"></i>Comfortable with Laravel ecosystem</li>
+                                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-3"></i>Using queues, events, and jobs</li>
+                                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-3"></i>Want to level up architecture skills</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Advanced -->
+                    <label class="block cursor-pointer group">
+                        <input type="radio" name="level" value="advanced" class="peer hidden">
+                        <div class="bg-white border-2 border-gray-200 rounded-2xl p-8 transition-all duration-200 hover:border-red-300 hover:shadow-lg peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:shadow-lg">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mr-6">
+                                    <div class="w-8 h-8 rounded-full border-2 border-gray-300 peer-checked:border-red-600 peer-checked:bg-red-600 flex items-center justify-center transition-all">
+                                        <i class="fas fa-check text-white text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-4">
+                                        <h3 class="text-2xl font-bold text-gray-900 mr-4">Senior/Architect</h3>
+                                        <span class="bg-purple-100 text-purple-700 text-sm px-3 py-1.5 rounded-full font-semibold">ADVANCED</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-6 text-lg">3+ years, leading teams or architecting systems</p>
+                                    <ul class="text-gray-600 space-y-3">
+                                        <li class="flex items-center"><i class="fas fa-check text-purple-600 mr-3"></i>Deep Laravel framework knowledge</li>
+                                        <li class="flex items-center"><i class="fas fa-check text-purple-600 mr-3"></i>Interested in advanced patterns</li>
+                                        <li class="flex items-center"><i class="fas fa-check text-purple-600 mr-3"></i>Following framework internals</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between items-center">
+                    <a href="onboarding-first.html" class="text-gray-600 hover:text-gray-900 font-medium transition-colors flex items-center space-x-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back</span>
+                    </a>
+                    <button id="continueBtn" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg flex items-center space-x-2" disabled>
+                        <span>Continue</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const radios = document.querySelectorAll('input[name="level"]');
+        const continueBtn = document.getElementById('continueBtn');
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                continueBtn.disabled = false;
+            });
+        });
+
+        continueBtn.addEventListener('click', () => {
+            if (!continueBtn.disabled) {
+                window.location.href = 'onboarding-three.html';
+            }
+        });
+    </script>
+
+</body>
+</html>

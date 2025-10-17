@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Digest - LaravelSense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased bg-gray-50 font-sans">
+
+    <!-- Header -->
+    <header class="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">LaravelSense</span>
+                    </div>
+
+                    <nav class="hidden md:flex items-center space-x-6">
+                        <a href="index.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Feed</a>
+                        <a href="digest.html" class="text-red-600 font-semibold border-b-2 border-red-600 pb-1">Digest</a>
+                        <a href="library.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Library</a>
+                        <a href="explore.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Explore</a>
+                        <a href="manange-source.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">
+                            <i class="fas fa-rss mr-2"></i>Sources
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden lg:block">
+                        <input type="search" placeholder="Search digest..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <button class="text-gray-600 hover:text-gray-900 transition-colors p-2 hover:bg-gray-100 rounded-xl">
+                            <i class="fas fa-bell text-lg"></i>
+                        </button>
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 hover:bg-gray-100 rounded-xl px-3 py-2 transition-colors">
+                                <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">A</div>
+                                <i class="fas fa-chevron-down text-gray-600 text-xs"></i>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-2">
+                                    <a href="setting.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                        Settings
+                                    </a>
+                                    <a href="index.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-home mr-3 text-gray-400"></i>
+                                        Home
+                                    </a>
+                                    <div class="border-t border-gray-200 my-2"></div>
+                                    <a href="#logout" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
+                                        <i class="fas fa-sign-out-alt mr-3"></i>
+                                        Sign Out
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-3">
+                        <i class="fas fa-envelope-open text-red-600 mr-3"></i>
+                        Your Personalized Digest
+                    </h1>
+                    <p class="text-xl text-gray-600">Curated articles based on your interests: Testing, Performance, APIs</p>
+                </div>
+                <button class="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-cog mr-2"></i>
+                    Preferences
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex items-center space-x-3 overflow-x-auto pb-4 mb-8 border-b border-gray-200">
+            <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold whitespace-nowrap shadow-lg">
+                Today (4 articles)
+            </button>
+            <button class="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-medium hover:border-red-300 hover:bg-red-50 transition-colors whitespace-nowrap">
+                Yesterday (5 articles)
+            </button>
+            <button class="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-medium hover:border-red-300 hover:bg-red-50 transition-colors whitespace-nowrap">
+                This Week (27 articles)
+            </button>
+            <button class="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-medium hover:border-red-300 hover:bg-red-50 transition-colors whitespace-nowrap">
+                Archive
+            </button>
+        </div>
+
+        <!-- Today's Digest Header -->
+        <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl p-8 mb-8 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="flex items-center space-x-4 mb-3">
+                        <i class="fas fa-sun text-yellow-300 text-3xl"></i>
+                        <h2 class="text-3xl font-bold">Good Morning, Alex</h2>
+                    </div>
+                    <p class="text-red-100 text-lg">Thursday, October 16, 2025 • 4 minutes of reading</p>
+                </div>
+                <div class="text-right">
+                    <button class="bg-white text-red-600 px-6 py-3 rounded-xl font-semibold hover:bg-red-50 transition-colors shadow-lg">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Email This Digest
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Summary -->
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-8">
+            <div class="flex items-start">
+                <div class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 mr-6">
+                    <i class="fas fa-brain text-white text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-blue-900 mb-3 text-lg">
+                        <i class="fas fa-sparkles text-yellow-500 mr-2"></i>
+                        Quick Summary
+                    </h3>
+                    <p class="text-blue-800 mb-4 leading-relaxed">
+                        Today's digest focuses on <strong>testing file uploads</strong> and <strong>security patches</strong>. One critical security update requires immediate action. Also featured: API type safety and performance optimization tips.
+                    </p>
+                    <div class="flex items-center space-x-6 text-sm text-blue-700">
+                        <span class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                            1 urgent
+                        </span>
+                        <span class="flex items-center">
+                            <i class="fas fa-tags mr-2"></i>
+                            2 related topics
+                        </span>
+                        <span class="flex items-center">
+                            <i class="fas fa-star mr-2"></i>
+                            3 trending
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Articles List -->
+        <div class="space-y-8">
+            <!-- Article 1 - Critical -->
+            <article class="bg-white rounded-2xl border-2 border-red-200 overflow-hidden hover:shadow-xl transition-all">
+                <div class="bg-red-50 px-8 py-4 border-b border-red-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            <span class="text-red-800 font-semibold">CRITICAL - ACTION REQUIRED</span>
+                        </div>
+                        <span class="text-sm text-red-600">Added to your digest 2 hours ago</span>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full font-semibold">
+                                <i class="fas fa-shield-alt mr-1"></i>SECURITY
+                            </span>
+                            <span class="text-gray-500 text-sm">2 min read</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 hover:text-red-600 cursor-pointer">
+                        Laravel 11.x Security Patch Released - SQL Injection Vulnerability
+                    </h3>
+
+                    <p class="text-gray-600 mb-4">
+                        A critical security vulnerability has been discovered in Laravel's Eloquent ORM affecting versions 11.0 to 11.2. The vulnerability allows SQL injection through unsanitized where clauses. Immediate patching is recommended for all production applications.
+                    </p>
+
+                    <div class="bg-red-50 border-l-4 border-red-600 p-4 mb-4">
+                        <p class="text-sm text-red-900">
+                            <strong>Why this matters to you:</strong> You're currently using Laravel 11.1 according to your recent GitHub activity. Update to 11.2.1 immediately.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                        <div class="flex items-center space-x-6 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <img src="https://via.placeholder.com/24" alt="Laravel News" class="w-6 h-6 rounded-full mr-2">
+                                Laravel News
+                            </span>
+                            <span>2 hours ago</span>
+                            <span class="flex items-center text-orange-600">
+                                <i class="fas fa-fire mr-1"></i>
+                                2.3k developers read this
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="text-gray-600 hover:text-red-600 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors font-semibold">
+                                <i class="fas fa-times mr-1"></i>Skip
+                            </button>
+                            <button class="text-gray-600 hover:text-blue-600 px-4 py-2 rounded-xl hover:bg-blue-50 transition-colors font-semibold">
+                                <i class="far fa-bookmark mr-1"></i>Save
+                            </button>
+                            <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl hover:from-red-700 hover:to-red-800 transition-all font-semibold shadow-lg hover:shadow-xl">
+                                Read Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Article 2 - Featured -->
+            <article class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all">
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-semibold">
+                                <i class="fas fa-flask mr-1"></i>TESTING
+                            </span>
+                            <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full font-semibold">
+                                <i class="fas fa-star mr-1"></i>Featured
+                            </span>
+                            <span class="text-gray-500 text-sm">6 min read</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-red-600 cursor-pointer">
+                        Testing File Uploads with Pest: A Complete Guide
+                    </h3>
+
+                    <p class="text-gray-600 text-sm mb-4">
+                        Learn how to properly test file uploads in Laravel using Pest, including validation, storage, and edge cases. Covers Storage::fake(), UploadedFile helpers, and best practices for testing file handling.
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mb-4">
+                        <p class="text-sm text-blue-900">
+                            <strong>From your "Testing Mastery" path:</strong> This is article 6 of 8. You're 60% complete!
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <img src="https://via.placeholder.com/24" alt="Freek.dev" class="w-6 h-6 rounded-full mr-2">
+                                Freek Van der Herten
+                            </span>
+                            <span>5 hours ago</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="text-gray-600 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors font-medium">
+                                <i class="fas fa-times mr-1"></i>Skip
+                            </button>
+                            <button class="text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors font-medium">
+                                <i class="far fa-bookmark mr-1"></i>Save
+                            </button>
+                            <button class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                                Read Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Article 3 -->
+            <article class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all">
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full font-semibold">
+                                <i class="fas fa-plug mr-1"></i>APIS
+                            </span>
+                            <span class="text-gray-500 text-sm">8 min read</span>
+                            <span class="text-gray-500 text-sm">•</span>
+                            <span class="text-gray-600 text-sm">Intermediate</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-red-600 cursor-pointer">
+                        Building Type-Safe APIs with Laravel Data
+                    </h3>
+
+                    <p class="text-gray-600 text-sm mb-4">
+                        Explore the Laravel Data package by Spatie to create strongly-typed API resources with automatic validation and transformation. Learn how to eliminate runtime type errors in your API layer.
+                    </p>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <img src="https://via.placeholder.com/24" alt="Laravel Daily" class="w-6 h-6 rounded-full mr-2">
+                                Laravel Daily
+                            </span>
+                            <span>1 day ago</span>
+                            <span class="flex items-center text-orange-600">
+                                <i class="fas fa-fire mr-1"></i>
+                                Trending
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="text-gray-600 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors font-medium">
+                                <i class="fas fa-times mr-1"></i>Skip
+                            </button>
+                            <button class="text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors font-medium">
+                                <i class="far fa-bookmark mr-1"></i>Save
+                            </button>
+                            <button class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                                Read Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Article 4 -->
+            <article class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all">
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-semibold">
+                                <i class="fas fa-tachometer-alt mr-1"></i>PERFORMANCE
+                            </span>
+                            <span class="text-gray-500 text-sm">10 min read</span>
+                            <span class="text-gray-500 text-sm">•</span>
+                            <span class="text-gray-600 text-sm">Advanced</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-red-600 cursor-pointer">
+                        Optimizing Eloquent Queries: 5 Common Mistakes
+                    </h3>
+
+                    <p class="text-gray-600 text-sm mb-4">
+                        Avoid N+1 problems, understand eager loading strategies, and learn when to use database indexing for faster queries. Real-world examples from production applications with measurable performance improvements.
+                    </p>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <img src="https://via.placeholder.com/24" alt="Aaron Francis" class="w-6 h-6 rounded-full mr-2">
+                                Aaron Francis
+                            </span>
+                            <span>2 days ago</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="text-gray-600 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors font-medium">
+                                <i class="fas fa-times mr-1"></i>Skip
+                            </button>
+                            <button class="text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors font-medium">
+                                <i class="far fa-bookmark mr-1"></i>Save
+                            </button>
+                            <button class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                                Read Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <!-- Digest Complete -->
+        <div class="mt-12 text-center py-12 bg-white rounded-2xl border border-gray-200 shadow-lg">
+            <i class="fas fa-check-circle text-green-600 text-6xl mb-6"></i>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">That's all for today!</h3>
+            <p class="text-xl text-gray-600 mb-8">You've reached the end of your personalized digest. Come back tomorrow for fresh content.</p>
+            <div class="flex items-center justify-center space-x-6">
+                <a href="explore.html" class="px-8 py-4 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-compass mr-2"></i>
+                    Explore More Content
+                </a>
+                <a href="library.html" class="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                    <i class="fas fa-bookmark mr-2"></i>
+                    View Your Library
+                </a>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

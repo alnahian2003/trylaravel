@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library - LaravelSense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased bg-gray-50 font-sans">
+
+    <!-- Header -->
+    <header class="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">LaravelSense</span>
+                    </div>
+
+                    <nav class="hidden md:flex items-center space-x-6">
+                        <a href="index.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Feed</a>
+                        <a href="explore.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Explore</a>
+                        <a href="library.html" class="text-red-600 font-semibold border-b-2 border-red-600 pb-1">Library</a>
+                        <a href="manange-source.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">
+                            <i class="fas fa-rss mr-2"></i>Sources
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden lg:block">
+                        <input type="search" placeholder="Search bookmarks..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <button class="text-gray-600 hover:text-gray-900 transition-colors p-2 hover:bg-gray-100 rounded-xl">
+                            <i class="fas fa-bell text-lg"></i>
+                        </button>
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 hover:bg-gray-100 rounded-xl px-3 py-2 transition-colors">
+                                <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">A</div>
+                                <i class="fas fa-chevron-down text-gray-600 text-xs"></i>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-2">
+                                    <a href="setting.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                        Settings
+                                    </a>
+                                    <a href="index.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-home mr-3 text-gray-400"></i>
+                                        Home
+                                    </a>
+                                    <div class="border-t border-gray-200 my-2"></div>
+                                    <a href="#logout" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
+                                        <i class="fas fa-sign-out-alt mr-3"></i>
+                                        Sign Out
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-3">
+                        <i class="fas fa-bookmark text-purple-600 mr-3"></i>
+                        Your Library
+                    </h1>
+                    <p class="text-xl text-gray-600">47 bookmarked articles</p>
+                </div>
+                <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                    <i class="fas fa-download mr-2"></i>
+                    Export All
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters & Search -->
+        <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <!-- Filter Tabs -->
+                <div class="flex items-center space-x-3 overflow-x-auto pb-2">
+                    <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap shadow-lg">
+                        All (47)
+                    </button>
+                    <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors whitespace-nowrap">
+                        <i class="fas fa-flask text-blue-600 mr-2"></i>
+                        Testing (12)
+                    </button>
+                    <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors whitespace-nowrap">
+                        <i class="fas fa-tachometer-alt text-green-600 mr-2"></i>
+                        Performance (8)
+                    </button>
+                    <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors whitespace-nowrap">
+                        <i class="fas fa-plug text-purple-600 mr-2"></i>
+                        APIs (7)
+                    </button>
+                    <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors whitespace-nowrap">
+                        <i class="fas fa-shield-alt text-red-600 mr-2"></i>
+                        Security (6)
+                    </button>
+                    <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors whitespace-nowrap">
+                        Others (14)
+                    </button>
+                </div>
+
+                <!-- Sort & View Options -->
+                <div class="flex items-center space-x-3">
+                    <select class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                        <option>Newest First</option>
+                        <option>Oldest First</option>
+                        <option>Most Read</option>
+                        <option>Alphabetical</option>
+                    </select>
+                    <div class="flex items-center space-x-1 bg-gray-100 rounded-xl p-1">
+                        <button class="bg-white text-gray-700 px-3 py-2 rounded-lg text-sm shadow-sm">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button class="text-gray-500 px-3 py-2 rounded-lg text-sm hover:bg-white hover:shadow-sm transition-all">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookmarked Articles Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Article Card 1 -->
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="bg-blue-100 text-blue-700 text-xs px-3 py-1.5 rounded-full font-semibold">
+                            <i class="fas fa-flask mr-1"></i>TESTING
+                        </span>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors">
+                        Testing File Uploads with Pest
+                    </h3>
+                    <p class="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                        Learn how to properly test file uploads in Laravel using Pest, including validation and storage.
+                    </p>
+
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-newspaper mr-2"></i>
+                            Freek.dev
+                        </span>
+                        <span>6 min read</span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <span class="text-xs text-gray-500">
+                            <i class="far fa-clock mr-1"></i>
+                            Saved 2 days ago
+                        </span>
+                        <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                            Read
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Card 2 -->
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="bg-green-100 text-green-700 text-xs px-3 py-1.5 rounded-full font-semibold">
+                            <i class="fas fa-tachometer-alt mr-1"></i>PERFORMANCE
+                        </span>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors">
+                        Optimizing Eloquent Queries
+                    </h3>
+                    <p class="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                        Avoid N+1 problems and learn when to use database indexing for faster queries in production.
+                    </p>
+
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-newspaper mr-2"></i>
+                            Aaron Francis
+                        </span>
+                        <span>10 min read</span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <span class="text-xs text-gray-500">
+                            <i class="far fa-clock mr-1"></i>
+                            Saved 1 week ago
+                        </span>
+                        <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                            Read
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Card 3 -->
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full font-semibold">
+                            <i class="fas fa-plug mr-1"></i>APIS
+                        </span>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors">
+                        Building Type-Safe APIs
+                    </h3>
+                    <p class="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                        Explore the Laravel Data package to create strongly-typed API resources with validation.
+                    </p>
+
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-newspaper mr-2"></i>
+                            Laravel Daily
+                        </span>
+                        <span>8 min read</span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <span class="text-xs text-gray-500">
+                            <i class="far fa-clock mr-1"></i>
+                            Saved 2 weeks ago
+                        </span>
+                        <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                            Read
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Card 4 -->
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="bg-red-100 text-red-700 text-xs px-3 py-1.5 rounded-full font-semibold">
+                            <i class="fas fa-shield-alt mr-1"></i>SECURITY
+                        </span>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors">
+                        Securing Laravel Applications
+                    </h3>
+                    <p class="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                        Essential security practices every Laravel developer should implement in production apps.
+                    </p>
+
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-newspaper mr-2"></i>
+                            Laravel News
+                        </span>
+                        <span>12 min read</span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <span class="text-xs text-gray-500">
+                            <i class="far fa-clock mr-1"></i>
+                            Saved 3 weeks ago
+                        </span>
+                        <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                            Read
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Card 5 -->
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="bg-indigo-100 text-indigo-700 text-xs px-3 py-1.5 rounded-full font-semibold">
+                            <i class="fas fa-sitemap mr-1"></i>ARCHITECTURE
+                        </span>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors">
+                        Repository Pattern in Laravel
+                    </h3>
+                    <p class="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                        When and how to implement the repository pattern for better code organization and testing.
+                    </p>
+
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-newspaper mr-2"></i>
+                            Matt Stauffer
+                        </span>
+                        <span>15 min read</span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <span class="text-xs text-gray-500">
+                            <i class="far fa-clock mr-1"></i>
+                            Saved 1 month ago
+                        </span>
+                        <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                            Read
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Card 6 -->
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="bg-pink-100 text-pink-700 text-xs px-3 py-1.5 rounded-full font-semibold">
+                            <i class="fas fa-palette mr-1"></i>FRONTEND
+                        </span>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors">
+                        Livewire 3 Best Practices
+                    </h3>
+                    <p class="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                        Build reactive interfaces with Livewire 3 and avoid common performance pitfalls.
+                    </p>
+
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-newspaper mr-2"></i>
+                            Caleb Porzio
+                        </span>
+                        <span>9 min read</span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <span class="text-xs text-gray-500">
+                            <i class="far fa-clock mr-1"></i>
+                            Saved 1 month ago
+                        </span>
+                        <button class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl">
+                            Read
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-12 flex items-center justify-center">
+            <nav class="flex items-center space-x-2">
+                <button class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold shadow-lg">1</button>
+                <button class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors">2</button>
+                <button class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors">3</button>
+                <span class="px-2 text-gray-500">...</span>
+                <button class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors">8</button>
+                <button class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </nav>
+        </div>
+    </main>
+
+</body>
+</html>

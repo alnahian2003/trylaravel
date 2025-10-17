@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaravelSense - Your Laravel Community Feed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased bg-gray-50 font-sans">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-bolt text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">LaravelSense</span>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-xl mx-8">
+                    <div class="relative">
+                        <input 
+                            type="search" 
+                            placeholder="Search Laravel content..." 
+                            class="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all text-sm"
+                        >
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Right Side - Auth/Non-Auth -->
+                <div id="auth-nav" class="flex items-center space-x-4">
+                    <!-- Authenticated User Menu -->
+                    <div class="flex items-center space-x-3">
+                        <div class="relative group">
+                            <button class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center cursor-pointer">
+                                <span class="text-white font-semibold text-sm">U</span>
+                            </button>
+                            <!-- Dropdown -->
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <div class="py-2">
+                                    <a href="setting.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 text-sm">
+                                        <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                        Settings
+                                    </a>
+                                    <div class="border-t border-gray-200 my-2"></div>
+                                    <button onclick="showNonAuthView()" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 text-sm w-full text-left">
+                                        <i class="fas fa-sign-out-alt mr-3"></i>
+                                        Sign Out
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Non-Auth Navigation (Hidden by default) -->
+                <div id="non-auth-nav" class="hidden items-center space-x-4">
+                    <button onclick="showAuthView()" class="text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm">Login</button>
+                    <a href="onboarding-first.html" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2.5 rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all text-sm">
+                        Join Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Authenticated User Layout -->
+        <div id="auth-layout" class="grid lg:grid-cols-4 gap-12">
+            
+            <!-- Left Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24 space-y-6">
+                    
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h3 class="font-bold text-gray-900 mb-4 text-lg">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button onclick="document.getElementById('addSourceModal').classList.remove('hidden')" class="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fas fa-plus"></i>
+                                <span>Add Source</span>
+                            </button>
+                            <a href="library.html" class="block w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center">
+                                <i class="fas fa-bookmark mr-2"></i>Bookmarks
+                            </a>
+                            <a href="library.html" class="block w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center">
+                                <i class="fas fa-heart mr-2"></i>Liked Posts
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- My Sources -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-gray-900 text-lg">My Sources</h3>
+                            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">8 active</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <!-- Source Item -->
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://via.placeholder.com/32x32/dc2626/ffffff?text=LN" alt="Laravel News" class="w-8 h-8 rounded-full">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Laravel News</div>
+                                        <div class="text-xs text-gray-500">5 new posts</div>
+                                    </div>
+                                </div>
+                                <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                            </div>
+
+                            <!-- Source Item -->
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://via.placeholder.com/32x32/7c3aed/ffffff?text=FD" alt="Freek.dev" class="w-8 h-8 rounded-full">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Freek.dev</div>
+                                        <div class="text-xs text-gray-500">2 new posts</div>
+                                    </div>
+                                </div>
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            </div>
+
+                            <!-- Source Item -->
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://via.placeholder.com/32x32/059669/ffffff?text=LD" alt="Laravel Daily" class="w-8 h-8 rounded-full">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Laravel Daily</div>
+                                        <div class="text-xs text-gray-500">1 new post</div>
+                                    </div>
+                                </div>
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            </div>
+
+                            <!-- View All Sources -->
+                            <div class="pt-3 border-t border-gray-200">
+                                <a href="manange-source.html" class="text-xs text-red-600 hover:text-red-700 font-medium">
+                                    <i class="fas fa-cog mr-1"></i>Manage all sources
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trending -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h3 class="font-bold text-gray-900 mb-4 text-lg">Trending</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-700">#Laravel11</span>
+                                <span class="text-xs text-gray-500">124 posts</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-700">#Livewire</span>
+                                <span class="text-xs text-gray-500">89 posts</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-700">#Security</span>
+                                <span class="text-xs text-gray-500">67 posts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Feed -->
+            <div class="lg:col-span-3">
+                <!-- Feed Content -->
+                <div class="grid md:grid-cols-2 gap-8" id="auth-feed">
+                    <!-- Feed content will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Non-Authenticated User Layout (Hidden by default) -->
+        <div id="non-auth-layout" class="hidden max-w-2xl mx-auto">
+            <!-- Welcome Banner -->
+            <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-8 mb-8 text-white text-center">
+                <h1 class="text-2xl font-bold mb-2">Welcome to LaravelSense</h1>
+                <p class="text-red-100 mb-6">Discover the latest Laravel content from top creators in the community</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="showAuthView()" class="bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                        Sign In
+                    </button>
+                    <a href="onboarding-first.html" class="bg-red-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-800 transition-colors">
+                        Join Free
+                    </a>
+                </div>
+            </div>
+
+            <!-- Public Feed -->
+            <div class="grid md:grid-cols-2 gap-8" id="non-auth-feed">
+                <!-- Feed content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Feed Posts Template (Shared) -->
+    <div id="feed-content" class="hidden">
+        <!-- Post 1 -->
+        <article class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+            <div class="p-6">
+                <!-- Source Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://via.placeholder.com/36x36/dc2626/ffffff?text=LN" alt="Laravel News" class="w-9 h-9 rounded-full">
+                        <div>
+                            <div class="font-semibold text-gray-900">Laravel News</div>
+                            <div class="text-gray-500 text-sm">2 hours ago</div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-red-600 p-2 auth-only">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                    Laravel 11.x Security Patch Released - Critical SQL Injection Fix
+                </h3>
+                
+                <p class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
+                    A critical security vulnerability has been discovered in Laravel's Eloquent ORM affecting versions 11.0 to 11.2. The patch addresses a potential SQL injection attack vector.
+                </p>
+
+                <!-- Tags -->
+                <div class="flex items-center flex-wrap gap-2 mb-6">
+                    <span class="bg-red-100 text-red-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        Critical
+                    </span>
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        Security
+                    </span>
+                    <span class="text-gray-500 text-sm ml-auto">3 min read</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-6 text-sm text-gray-500">
+                        <button class="flex items-center space-x-2 hover:text-red-500 transition-colors auth-only">
+                            <i class="far fa-heart"></i>
+                            <span>124</span>
+                        </button>
+                        <button class="flex items-center space-x-2 hover:text-blue-500 transition-colors auth-only">
+                            <i class="far fa-comment"></i>
+                            <span>18</span>
+                        </button>
+                        <button class="text-gray-500 hover:text-green-500 transition-colors">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                    <a href="blog-single.html" class="text-red-600 hover:text-red-700 font-medium">
+                        Read →
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Post 2 - Video -->
+        <article class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+            <!-- Video Thumbnail -->
+            <div class="relative rounded-t-2xl overflow-hidden">
+                <div class="aspect-video bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                    <div class="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                        <i class="fas fa-play text-purple-600 text-xl ml-1"></i>
+                    </div>
+                </div>
+                <div class="absolute bottom-3 right-3 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                    15:42
+                </div>
+                <div class="absolute top-3 left-3 bg-purple-600 text-white px-2 py-1 rounded text-xs font-medium">
+                    VIDEO
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Source Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://via.placeholder.com/36x36/7c3aed/ffffff?text=FD" alt="Freek.dev" class="w-9 h-9 rounded-full">
+                        <div>
+                            <div class="font-semibold text-gray-900">Freek Van der Herten</div>
+                            <div class="text-gray-500 text-sm">5 hours ago</div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-red-600 p-2 auth-only">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                    Advanced Testing Techniques in Laravel with Pest
+                </h3>
+                
+                <p class="text-gray-600 mb-6 leading-relaxed line-clamp-2">
+                    Deep dive into advanced testing strategies using Pest PHP. Learn how to test complex scenarios and write maintainable test suites.
+                </p>
+
+                <!-- Tags -->
+                <div class="flex items-center flex-wrap gap-2 mb-6">
+                    <span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        Testing
+                    </span>
+                    <span class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        Pest
+                    </span>
+                    <span class="text-gray-500 text-sm ml-auto">16 min</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-6 text-sm text-gray-500">
+                        <button class="flex items-center space-x-2 hover:text-red-500 transition-colors auth-only">
+                            <i class="far fa-heart"></i>
+                            <span>89</span>
+                        </button>
+                        <button class="flex items-center space-x-2 hover:text-blue-500 transition-colors auth-only">
+                            <i class="far fa-comment"></i>
+                            <span>12</span>
+                        </button>
+                        <button class="text-gray-500 hover:text-green-500 transition-colors">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                    <button class="text-red-600 hover:text-red-700 font-medium">
+                        Watch →
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <!-- Post 3 -->
+        <article class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+            <div class="p-6">
+                <!-- Source Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://via.placeholder.com/36x36/059669/ffffff?text=LD" alt="Laravel Daily" class="w-9 h-9 rounded-full">
+                        <div>
+                            <div class="font-semibold text-gray-900">Laravel Daily</div>
+                            <div class="text-gray-500 text-sm">1 day ago</div>
+                        </div>
+                    </div>
+                    <button class="text-red-500 hover:text-red-600 p-2 auth-only">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                    Building Type-Safe APIs with Laravel Data Package
+                </h3>
+                
+                <p class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
+                    Explore Spatie's Laravel Data package to create strongly-typed API resources with automatic validation and transformation. Learn how to eliminate runtime errors.
+                </p>
+
+                <!-- Tags -->
+                <div class="flex items-center flex-wrap gap-2 mb-6">
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        APIs
+                    </span>
+                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        Spatie
+                    </span>
+                    <span class="text-gray-500 text-sm ml-auto">8 min read</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-6 text-sm text-gray-500">
+                        <button class="flex items-center space-x-2 text-red-500 transition-colors auth-only">
+                            <i class="fas fa-heart"></i>
+                            <span>67</span>
+                        </button>
+                        <button class="flex items-center space-x-2 hover:text-blue-500 transition-colors auth-only">
+                            <i class="far fa-comment"></i>
+                            <span>8</span>
+                        </button>
+                        <button class="text-gray-500 hover:text-green-500 transition-colors">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                    <a href="blog-single.html" class="text-red-600 hover:text-red-700 font-medium">
+                        Read →
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Post 4 - Podcast -->
+        <article class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+            <div class="p-6">
+                <!-- Source Header -->
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <img src="https://via.placeholder.com/32x32/7c2d12/ffffff?text=LP" alt="Laravel Podcast" class="w-8 h-8 rounded-full">
+                        <div>
+                            <div class="font-semibold text-gray-900 text-sm">The Laravel Podcast</div>
+                            <div class="text-gray-500 text-xs">2 days ago</div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-red-600 p-1 auth-only">
+                        <i class="fas fa-bookmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <h3 class="text-lg font-bold text-gray-900 mb-3 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                    Episode 187: The Future of Laravel with Taylor Otwell
+                </h3>
+
+                <!-- Podcast Player -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-3 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <button class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center shadow-sm">
+                            <i class="fas fa-play text-white text-sm"></i>
+                        </button>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                <span>0:00</span>
+                                <span>42:15</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1">
+                                <div class="bg-indigo-600 h-1 rounded-full" style="width: 25%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-gray-600 mb-4 leading-relaxed text-sm line-clamp-2">
+                    Taylor joins us to discuss the roadmap for Laravel 12, exciting new features in development, and his thoughts on the current state of PHP.
+                </p>
+
+                <!-- Tags -->
+                <div class="flex items-center flex-wrap gap-1 mb-4">
+                    <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md text-xs font-medium">
+                        Podcast
+                    </span>
+                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded-md text-xs font-medium">
+                        Laravel 12
+                    </span>
+                    <span class="text-gray-500 text-xs ml-auto">42 min</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                        <button class="flex items-center space-x-1 hover:text-red-500 transition-colors auth-only">
+                            <i class="far fa-heart text-xs"></i>
+                            <span class="text-xs">156</span>
+                        </button>
+                        <button class="flex items-center space-x-1 hover:text-blue-500 transition-colors auth-only">
+                            <i class="far fa-comment text-xs"></i>
+                            <span class="text-xs">23</span>
+                        </button>
+                        <button class="text-gray-500 hover:text-green-500 transition-colors">
+                            <i class="fas fa-share text-xs"></i>
+                        </button>
+                    </div>
+                    <button class="text-red-600 hover:text-red-700 font-medium text-xs">
+                        Listen →
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <!-- Post 5 -->
+        <article class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+            <div class="p-6">
+                <!-- Source Header -->
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <img src="https://via.placeholder.com/32x32/0891b2/ffffff?text=CC" alt="Codecourse" class="w-8 h-8 rounded-full">
+                        <div>
+                            <div class="font-semibold text-gray-900 text-sm">Codecourse</div>
+                            <div class="text-gray-500 text-xs">3 days ago</div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-red-600 p-1 auth-only">
+                        <i class="fas fa-bookmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <h3 class="text-lg font-bold text-gray-900 mb-3 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                    Livewire 3 Components: Real-time Search with Debouncing
+                </h3>
+                
+                <p class="text-gray-600 mb-4 leading-relaxed text-sm line-clamp-3">
+                    Build a responsive search component with Livewire 3 that includes debouncing, loading states, and smooth user experience patterns.
+                </p>
+
+                <!-- Tags -->
+                <div class="flex items-center flex-wrap gap-1 mb-4">
+                    <span class="bg-pink-100 text-pink-700 px-2 py-1 rounded-md text-xs font-medium">
+                        Livewire
+                    </span>
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-md text-xs font-medium">
+                        Frontend
+                    </span>
+                    <span class="text-gray-500 text-xs ml-auto">12 min read</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                        <button class="flex items-center space-x-1 hover:text-red-500 transition-colors auth-only">
+                            <i class="far fa-heart text-xs"></i>
+                            <span class="text-xs">92</span>
+                        </button>
+                        <button class="flex items-center space-x-1 hover:text-blue-500 transition-colors auth-only">
+                            <i class="far fa-comment text-xs"></i>
+                            <span class="text-xs">15</span>
+                        </button>
+                        <button class="text-gray-500 hover:text-green-500 transition-colors">
+                            <i class="fas fa-share text-xs"></i>
+                        </button>
+                    </div>
+                    <a href="blog-single.html" class="text-red-600 hover:text-red-700 font-medium text-xs">
+                        Read →
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Post 6 -->
+        <article class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+            <div class="p-6">
+                <!-- Source Header -->
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <img src="https://via.placeholder.com/32x32/ea580c/ffffff?text=MS" alt="Matt Stauffer" class="w-8 h-8 rounded-full">
+                        <div>
+                            <div class="font-semibold text-gray-900 text-sm">Matt Stauffer</div>
+                            <div class="text-gray-500 text-xs">4 days ago</div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-red-600 p-1 auth-only">
+                        <i class="fas fa-bookmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <h3 class="text-lg font-bold text-gray-900 mb-3 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                    Domain-Driven Design in Laravel: Getting Started
+                </h3>
+                
+                <p class="text-gray-600 mb-4 leading-relaxed text-sm line-clamp-3">
+                    A practical introduction to implementing Domain-Driven Design principles in Laravel applications without overcomplicating your codebase.
+                </p>
+
+                <!-- Tags -->
+                <div class="flex items-center flex-wrap gap-1 mb-4">
+                    <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md text-xs font-medium">
+                        Architecture
+                    </span>
+                    <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded-md text-xs font-medium">
+                        DDD
+                    </span>
+                    <span class="text-gray-500 text-xs ml-auto">18 min read</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                        <button class="flex items-center space-x-1 hover:text-red-500 transition-colors auth-only">
+                            <i class="far fa-heart text-xs"></i>
+                            <span class="text-xs">203</span>
+                        </button>
+                        <button class="flex items-center space-x-1 hover:text-blue-500 transition-colors auth-only">
+                            <i class="far fa-comment text-xs"></i>
+                            <span class="text-xs">31</span>
+                        </button>
+                        <button class="text-gray-500 hover:text-green-500 transition-colors">
+                            <i class="fas fa-share text-xs"></i>
+                        </button>
+                    </div>
+                    <a href="blog-single.html" class="text-red-600 hover:text-red-700 font-medium text-xs">
+                        Read →
+                    </a>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Add Source Modal -->
+    <div id="addSourceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-900">Add New Source</h2>
+                <button onclick="document.getElementById('addSourceModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">RSS Feed URL</label>
+                    <input type="url" placeholder="https://example.com/feed" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    <p class="mt-2 text-xs text-gray-500">Add any Laravel blog or website RSS feed</p>
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="document.getElementById('addSourceModal').classList.add('hidden')" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700">
+                        Add Source
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start with authenticated view (you can change this to non-auth for testing)
+            showAuthView();
+        });
+
+        function showAuthView() {
+            // Show authenticated layout
+            document.getElementById('auth-layout').classList.remove('hidden');
+            document.getElementById('non-auth-layout').classList.add('hidden');
+            
+            // Show auth navigation
+            document.getElementById('auth-nav').classList.remove('hidden');
+            document.getElementById('non-auth-nav').classList.add('hidden');
+            
+            // Load feed content for authenticated users
+            loadFeedContent('auth-feed', true);
+        }
+
+        function showNonAuthView() {
+            // Show non-authenticated layout
+            document.getElementById('auth-layout').classList.add('hidden');
+            document.getElementById('non-auth-layout').classList.remove('hidden');
+            
+            // Show non-auth navigation
+            document.getElementById('auth-nav').classList.add('hidden');
+            document.getElementById('non-auth-nav').classList.remove('hidden');
+            
+            // Load feed content for non-authenticated users
+            loadFeedContent('non-auth-feed', false);
+        }
+
+        function loadFeedContent(containerId, isAuthenticated) {
+            const container = document.getElementById(containerId);
+            const feedTemplate = document.getElementById('feed-content').innerHTML;
+            container.innerHTML = feedTemplate;
+            
+            // Show/hide auth-only elements
+            const authElements = container.querySelectorAll('.auth-only');
+            authElements.forEach(element => {
+                if (isAuthenticated) {
+                    element.classList.remove('hidden');
+                } else {
+                    element.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing File Uploads with Pest - LaravelSense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .article-content { font-family: 'Inter', system-ui, sans-serif; }
+        .article-content h2 { font-size: 1.75rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1.5rem; }
+        .article-content p { margin-bottom: 1.5rem; line-height: 1.75; font-size: 1.125rem; }
+        .article-content code { background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 0.875rem; color: #374151; }
+        .article-content pre { background: #1f2937; color: #f3f4f6; padding: 1.5rem; border-radius: 0.75rem; overflow-x: auto; margin-bottom: 2rem; }
+    </style>
+</head>
+<body class="antialiased bg-white font-sans">
+
+    <!-- Top Navigation -->
+    <nav class="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Feed
+                    </a>
+                    <div class="text-gray-300">|</div>
+                    <a href="explore.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Explore</a>
+                    <a href="library.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Library</a>
+                    <a href="manange-source.html" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Sources</a>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors" title="Previous (K)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors" title="Next (J)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="w-px h-6 bg-gray-300 mx-2"></div>
+                    <button class="text-gray-600 hover:text-red-600 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors font-medium">
+                        <i class="far fa-bookmark mr-2"></i>
+                        Save
+                    </button>
+                    <button class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors font-medium">
+                        <i class="fas fa-share-alt mr-2"></i>
+                        Share
+                    </button>
+                    <button id="toggleContext" class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors font-medium">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Context
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="flex">
+        <!-- Article Content -->
+        <main class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <!-- Article Header -->
+            <header class="mb-12">
+                <div class="flex items-center space-x-3 mb-6">
+                    <span class="bg-blue-100 text-blue-700 text-sm px-4 py-1.5 rounded-full font-semibold">
+                        <i class="fas fa-flask mr-1"></i>TESTING
+                    </span>
+                    <span class="text-gray-500">•</span>
+                    <span class="text-gray-600 font-medium">6 min read</span>
+                    <span class="text-gray-500">•</span>
+                    <span class="text-gray-600 font-medium">Intermediate</span>
+                </div>
+
+                <h1 class="text-5xl font-bold text-gray-900 mb-8 leading-tight">
+                    Testing File Uploads with Pest: A Complete Guide
+                </h1>
+
+                <div class="flex items-center space-x-4">
+                    <img src="https://via.placeholder.com/56" alt="Author" class="w-14 h-14 rounded-full">
+                    <div>
+                        <p class="font-semibold text-gray-900 text-lg">Freek Van der Herten</p>
+                        <p class="text-gray-600">Published on Freek.dev • 5 hours ago</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Article Body -->
+            <article class="article-content text-gray-800 text-lg">
+                <p>
+                    File uploads are a common feature in web applications, but they can be tricky to test properly. In this guide, we'll explore how to write comprehensive tests for file upload functionality using Pest, Laravel's elegant testing framework.
+                </p>
+
+                <h2>Setting Up Your Test</h2>
+                <p>
+                    Before we dive into testing file uploads, let's set up our test file. We'll be using Pest's elegant syntax to make our tests readable and maintainable.
+                </p>
+
+                <pre><code>use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+
+it('can upload a file', function () {
+    Storage::fake('local');
+    
+    $file = UploadedFile::fake()->image('test.jpg');
+    
+    $response = $this->post('/upload', [
+        'file' => $file
+    ]);
+    
+    $response->assertStatus(200);
+    Storage::disk('local')->assertExists($file->hashName());
+});</code></pre>
+
+                <p>
+                    The <code>Storage::fake()</code> method is crucial here. It creates a temporary filesystem that prevents actual file I/O operations during testing, making your tests faster and safer.
+                </p>
+
+                <h2>Testing File Validation</h2>
+                <p>
+                    One of the most important aspects of file uploads is validation. You need to ensure that only files meeting your criteria (size, type, dimensions) can be uploaded.
+                </p>
+
+                <pre><code>it('rejects files that are too large', function () {
+    Storage::fake('local');
+    
+    $file = UploadedFile::fake()->create('large.pdf', 3000);
+    
+    $response = $this->post('/upload', [
+        'file' => $file
+    ]);
+    
+    $response->assertSessionHasErrors('file');
+});</code></pre>
+
+                <p>
+                    Testing edge cases like oversized files, invalid MIME types, and corrupted uploads is essential for building robust file upload features. Don't skip these tests—they'll save you from production issues.
+                </p>
+
+                <h2>Best Practices</h2>
+                <p>
+                    When testing file uploads, always remember to use <code>Storage::fake()</code> to avoid writing actual files to your filesystem. This keeps your tests isolated and prevents test pollution.
+                </p>
+
+                <p>
+                    Additionally, consider testing the entire upload lifecycle: validation, storage, retrieval, and deletion. This comprehensive approach ensures your file handling logic is bulletproof.
+                </p>
+
+                <div class="bg-blue-50 border-l-4 border-blue-600 p-6 my-8">
+                    <p class="text-blue-900 font-semibold mb-2">
+                        <i class="fas fa-lightbulb text-blue-600 mr-2"></i>
+                        Pro Tip
+                    </p>
+                    <p class="text-blue-800 text-base">
+                        Use <code>UploadedFile::fake()->image()</code> for images and <code>UploadedFile::fake()->create()</code> for other file types. This gives you fine-grained control over file properties in your tests.
+                    </p>
+                </div>
+
+                <h2>Conclusion</h2>
+                <p>
+                    File upload testing doesn't have to be complicated. With Pest's elegant syntax and Laravel's testing helpers, you can write comprehensive, maintainable tests that give you confidence in your upload functionality.
+                </p>
+
+                <p>
+                    Remember: good tests are an investment in your application's reliability. Take the time to cover edge cases, and your future self will thank you.
+                </p>
+            </article>
+
+            <!-- Article Footer -->
+            <footer class="mt-16 pt-8 border-t border-gray-200">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-4">
+                        <button class="flex items-center space-x-3 text-gray-600 hover:text-red-600 px-6 py-3 rounded-xl hover:bg-red-50 transition-colors">
+                            <i class="far fa-heart text-xl"></i>
+                            <span class="font-semibold">124</span>
+                        </button>
+                        <button class="text-gray-600 hover:text-red-600 px-6 py-3 rounded-xl hover:bg-red-50 transition-colors font-semibold">
+                            <i class="far fa-bookmark mr-2"></i>
+                            Save for Later
+                        </button>
+                    </div>
+                    <button class="text-gray-600 hover:text-gray-900 px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors font-semibold">
+                        <i class="fas fa-flag mr-2"></i>
+                        Report Issue
+                    </button>
+                </div>
+
+                <div class="bg-gray-50 rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Read Next</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <a href="#" class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
+                            <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1.5 rounded-full font-semibold">TESTING</span>
+                            <h4 class="font-bold text-gray-900 mt-4 mb-2 text-lg">Mocking External APIs in Tests</h4>
+                            <p class="text-gray-600">7 min read</p>
+                        </a>
+                        <a href="#" class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
+                            <span class="bg-green-100 text-green-700 text-sm px-3 py-1.5 rounded-full font-semibold">PERFORMANCE</span>
+                            <h4 class="font-bold text-gray-900 mt-4 mb-2 text-lg">Database Query Optimization</h4>
+                            <p class="text-gray-600">10 min read</p>
+                        </a>
+                    </div>
+                </div>
+            </footer>
+        </main>
+
+        <!-- Context Panel (Right Sidebar) -->
+        <aside id="contextPanel" class="hidden lg:block w-96 bg-gray-50 border-l border-gray-200 sticky top-16 h-screen overflow-y-auto">
+            <div class="p-8 space-y-8">
+                <!-- Context Header -->
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-gray-900">
+                        <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                        Context
+                    </h3>
+                    <button class="text-gray-600 hover:text-gray-900 p-2 hover:bg-gray-200 rounded-xl transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Packages Mentioned -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg">
+                    <h4 class="font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-cube text-orange-600 mr-2"></i>
+                        Packages Mentioned
+                    </h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-vial text-red-600"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h5 class="font-semibold text-gray-900 text-sm">pestphp/pest</h5>
+                                <p class="text-xs text-gray-600 mb-2">The elegant PHP testing framework</p>
+                                <div class="flex items-center space-x-3 text-xs text-gray-500">
+                                    <span><i class="fas fa-star text-yellow-500 mr-1"></i>8.2k</span>
+                                    <span>v2.28.0</span>
+                                </div>
+                                <a href="https://github.com/pestphp/pest" target="_blank" class="text-xs text-red-600 hover:text-red-700 font-medium mt-2 inline-block">
+                                    View on GitHub <i class="fas fa-external-link-alt ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Documentation -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg">
+                    <h4 class="font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-book text-blue-600 mr-2"></i>
+                        Related Documentation
+                    </h4>
+                    <div class="space-y-2">
+                        <a href="https://laravel.com/docs/testing" target="_blank" class="block text-sm text-gray-700 hover:text-red-600 py-2 border-b border-gray-100">
+                            <i class="fas fa-external-link-alt text-gray-400 mr-2 text-xs"></i>
+                            Laravel Testing Guide
+                        </a>
+                        <a href="https://laravel.com/docs/filesystem" target="_blank" class="block text-sm text-gray-700 hover:text-red-600 py-2 border-b border-gray-100">
+                            <i class="fas fa-external-link-alt text-gray-400 mr-2 text-xs"></i>
+                            File Storage Documentation
+                        </a>
+                        <a href="https://pestphp.com/docs" target="_blank" class="block text-sm text-gray-700 hover:text-red-600 py-2">
+                            <i class="fas fa-external-link-alt text-gray-400 mr-2 text-xs"></i>
+                            Pest PHP Documentation
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Your Related Bookmarks -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg">
+                    <h4 class="font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-bookmark text-purple-600 mr-2"></i>
+                        Your Related Bookmarks
+                    </h4>
+                    <div class="space-y-3">
+                        <a href="#" class="block group">
+                            <p class="text-sm font-medium text-gray-900 group-hover:text-red-600 mb-1">Getting Started with Pest</p>
+                            <p class="text-xs text-gray-500">Bookmarked 3 months ago</p>
+                        </a>
+                        <a href="#" class="block group">
+                            <p class="text-sm font-medium text-gray-900 group-hover:text-red-600 mb-1">Laravel Storage Best Practices</p>
+                            <p class="text-xs text-gray-500">Bookmarked 1 month ago</p>
+                        </a>
+                    </div>
+                    <button class="text-xs text-red-600 hover:text-red-700 font-medium mt-3">
+                        View all testing bookmarks →
+                    </button>
+                </div>
+
+                <!-- Topics -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg">
+                    <h4 class="font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-tags text-green-600 mr-2"></i>
+                        Topics
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">Testing</span>
+                        <span class="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">Pest</span>
+                        <span class="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">File Uploads</span>
+                        <span class="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">Storage</span>
+                        <span class="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">Validation</span>
+                    </div>
+                </div>
+
+
+            </div>
+        </aside>
+    </div>
+
+    <!-- Reading Progress Bar -->
+    <div class="fixed bottom-0 left-0 right-0 h-1 bg-gray-200 z-50">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-red-600 to-red-700 transition-all duration-150" style="width: 0%"></div>
+    </div>
+
+    <script>
+        // Reading progress
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Toggle context panel on mobile
+        document.getElementById('toggleContext')?.addEventListener('click', () => {
+            document.getElementById('contextPanel').classList.toggle('hidden');
+        });
+    </script>
+
+</body>
+</html>
