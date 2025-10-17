@@ -33,15 +33,14 @@ class LibraryController extends Controller
             });
         }
 
-        $bookmarkedPosts = $query->orderBy('post_bookmarks.created_at', 'desc')
-            ->paginate(12)
-            ->appends($request->query());
-
         // Get category counts in a single query using DB aggregation
         $categoryCounts = $this->getCategoryCounts($user);
 
         return Inertia::render('Library/Index', [
-            'bookmarks' => $bookmarkedPosts,
+            'bookmarks' => Inertia::scroll(fn () => $query->orderBy('post_bookmarks.created_at', 'desc')
+                ->paginate(12)
+                ->appends($request->query())
+            ),
             'categoryCounts' => $categoryCounts,
             'totalBookmarks' => $this->getTotalBookmarks($user),
             'selectedCategory' => $selectedCategory,

@@ -70,90 +70,62 @@
             </div>
 
             <!-- Bookmarked Articles Grid -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div 
-                    v-for="post in bookmarks.data" 
-                    :key="post.id"
-                    class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer"
-                >
-                    <div class="p-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <span 
-                                v-if="post.categories && post.categories.length > 0"
-                                :class="getCategoryClasses(post.categories[0])"
-                                class="text-xs px-3 py-1.5 rounded-full font-semibold"
-                            >
-                                <i :class="getCategoryIcon(post.categories[0])" class="mr-1"></i>
-                                {{ post.categories[0].toUpperCase() }}
-                            </span>
-                            <button 
-                                @click="removeBookmark(post.id)"
-                                class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg"
-                            >
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
+            <InfiniteScroll data="bookmarks" :buffer="500">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div 
+                        v-for="post in bookmarks.data" 
+                        :key="post.id"
+                        class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer"
+                    >
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <span 
+                                    v-if="post.categories && post.categories.length > 0"
+                                    :class="getCategoryClasses(post.categories[0])"
+                                    class="text-xs px-3 py-1.5 rounded-full font-semibold"
+                                >
+                                    <i :class="getCategoryIcon(post.categories[0])" class="mr-1"></i>
+                                    {{ post.categories[0].toUpperCase() }}
+                                </span>
+                                <button 
+                                    @click="removeBookmark(post.id)"
+                                    class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg"
+                                >
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
 
-                        <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors">
-                            {{ post.title }}
-                        </h3>
-                        <p class="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                            {{ post.excerpt }}
-                        </p>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors">
+                                {{ post.title }}
+                            </h3>
+                            <p class="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                                {{ post.excerpt }}
+                            </p>
 
-                        <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
-                            <span class="flex items-center">
-                                <i class="fas fa-newspaper mr-2"></i>
-                                {{ post.author_name || 'Unknown Author' }}
-                            </span>
-                            <span v-if="post.duration">{{ formatDuration(post.duration) }} read</span>
-                        </div>
+                            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                                <span class="flex items-center">
+                                    <i class="fas fa-newspaper mr-2"></i>
+                                    {{ post.author_name || 'Unknown Author' }}
+                                </span>
+                                <span v-if="post.duration">{{ formatDuration(post.duration) }} read</span>
+                            </div>
 
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                            <span class="text-xs text-gray-500">
-                                <i class="far fa-clock mr-1"></i>
-                                Saved {{ formatDate(post.created_at) }}
-                            </span>
-                            <Link 
-                                :href="route('posts.show', post.slug)"
-                                class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl"
-                            >
-                                Read
-                            </Link>
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                                <span class="text-xs text-gray-500">
+                                    <i class="far fa-clock mr-1"></i>
+                                    Saved {{ formatDate(post.created_at) }}
+                                </span>
+                                <Link 
+                                    :href="route('posts.show', post.slug)"
+                                    class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl"
+                                >
+                                    Read
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Pagination -->
-            <div v-if="bookmarks.last_page > 1" class="mt-12 flex items-center justify-center">
-                <nav class="flex items-center space-x-2">
-                    <Link 
-                        v-if="bookmarks.prev_page_url"
-                        :href="bookmarks.prev_page_url"
-                        class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
-                    >
-                        <i class="fas fa-chevron-left"></i>
-                    </Link>
-                    <span 
-                        v-for="page in paginationPages" 
-                        :key="page"
-                        class="px-4 py-2 rounded-xl"
-                        :class="page === bookmarks.current_page 
-                            ? 'bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold shadow-lg' 
-                            : 'border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer'"
-                    >
-                        {{ page }}
-                    </span>
-                    <Link 
-                        v-if="bookmarks.next_page_url"
-                        :href="bookmarks.next_page_url"
-                        class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
-                    >
-                        <i class="fas fa-chevron-right"></i>
-                    </Link>
-                </nav>
-            </div>
+            </InfiniteScroll>
 
             <!-- Empty State -->
             <div v-if="!bookmarks.data.length" class="text-center py-16">
@@ -176,7 +148,7 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3'
+import { Head, Link, router, InfiniteScroll } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { computed, ref } from 'vue'
 
@@ -188,18 +160,6 @@ const props = defineProps({
 })
 
 const selectedCategory = ref(props.selectedCategory || null)
-
-const paginationPages = computed(() => {
-    const pages = []
-    const current = props.bookmarks.current_page
-    const last = props.bookmarks.last_page
-    
-    for (let i = Math.max(1, current - 2); i <= Math.min(last, current + 2); i++) {
-        pages.push(i)
-    }
-    
-    return pages
-})
 
 const getCategoryIcon = (category) => {
     const icons = {
