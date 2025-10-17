@@ -68,19 +68,17 @@ class HomeController extends Controller
 
         $post->incrementViews();
 
-        // Get previous post (older)
         $previousPost = Post::query()
             ->published()
             ->where('published_at', '<', $post->published_at)
             ->orderBy('published_at', 'desc')
-            ->first();
+            ->first(['id', 'title', 'slug', 'type']);
 
-        // Get next post (newer)
         $nextPost = Post::query()
             ->published()
             ->where('published_at', '>', $post->published_at)
             ->orderBy('published_at', 'asc')
-            ->first();
+            ->first(['id', 'title', 'slug', 'type']);
 
         return Inertia::render('Posts/Show', [
             'post' => [
@@ -128,7 +126,7 @@ class HomeController extends Controller
                 ->where('type', $post->type)
                 ->latest('published_at')
                 ->limit(3)
-                ->get()
+                ->get(['id', 'title', 'slug', 'excerpt', 'type', 'author_name', 'author_avatar', 'published_at', 'views_count', 'likes_count', 'duration', 'featured_image'])
                 ->map(function (Post $relatedPost) {
                     return [
                         'id' => $relatedPost->id,
@@ -175,21 +173,23 @@ class HomeController extends Controller
 
     private function getTrendingTags(): array
     {
-        $allTags = Post::published()
-            ->whereNotNull('tags')
-            ->pluck('tags')
-            ->flatten()
-            ->countBy()
-            ->sortDesc()
-            ->take(10)
-            ->map(fn ($count, $tag) => [
-                'name' => $tag,
-                'count' => $count,
-            ])
-            ->values()
-            ->toArray();
+        return cache()->remember('trending_tags', 3600, function () {
+            $allTags = Post::published()
+                ->whereNotNull('tags')
+                ->pluck('tags')
+                ->flatten()
+                ->countBy()
+                ->sortDesc()
+                ->take(10)
+                ->map(fn ($count, $tag) => [
+                    'name' => $tag,
+                    'count' => $count,
+                ])
+                ->values()
+                ->toArray();
 
-        return $allTags;
+            return $allTags;
+        });
     }
 
     public function toggleLike(Post $post): \Illuminate\Http\JsonResponse
@@ -217,11 +217,12 @@ class HomeController extends Controller
     {
         $user = auth()->user();
 
-        // Check if user has already reported this post
         $existingReport = Report::query()
-            ->where('user_id', $user->id)
-            ->where('post_id', $post->id)
-            ->where('type', $request->type)
+            ->where([
+                ['user_id', $user->id],
+                ['post_id', $post->id],
+                ['type', $request->type],
+            ])
             ->exists();
 
         if ($existingReport) {

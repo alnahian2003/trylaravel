@@ -23,10 +23,13 @@ const showingNavigationDropdown = ref(false);
                         <div class="flex">
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
+                                <Link :href="route('home')" class="flex items-center space-x-3">
+                                    <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-sm">
+                                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xl font-bold text-gray-900">LaravelSense</span>
                                 </Link>
                             </div>
 
@@ -35,10 +38,16 @@ const showingNavigationDropdown = ref(false);
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    :href="route('home')"
+                                    :active="route().current('home')"
                                 >
-                                    Dashboard
+                                    Feed
+                                </NavLink>
+                                <NavLink
+                                    :href="route('library')"
+                                    :active="route().current('library')"
+                                >
+                                    Library
                                 </NavLink>
                             </div>
                         </div>
@@ -142,10 +151,16 @@ const showingNavigationDropdown = ref(false);
                 >
                     <div class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                            :href="route('home')"
+                            :active="route().current('home')"
                         >
-                            Dashboard
+                            Feed
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('library')"
+                            :active="route().current('library')"
+                        >
+                            Library
                         </ResponsiveNavLink>
                     </div>
 
