@@ -260,4 +260,63 @@ abstract class AbstractScraper implements ScrapableInterface
 
         return 0;
     }
+
+    protected function scrapeUrlSafely(string $url, array $config): string
+    {
+        // In production, try HTTP fallback first to avoid Chrome issues
+        if (app()->environment('production')) {
+            try {
+                return $this->httpFallback($url, $config);
+            } catch (\Exception $e) {
+                Log::warning("HTTP fallback failed, trying Browsershot", [
+                    'url' => $url,
+                    'error' => $e->getMessage()
+                ]);
+                // Still try Browsershot as backup
+                return BrowserFactory::scrapeUrl($url, $config);
+            }
+        }
+        
+        // Development: try Browsershot first, fallback to HTTP
+        try {
+            return BrowserFactory::scrapeUrl($url, $config);
+        } catch (\Exception $e) {
+            Log::warning("Browsershot failed in development, using HTTP fallback", [
+                'url' => $url,
+                'error' => $e->getMessage()
+            ]);
+            
+            return $this->httpFallback($url, $config);
+        }
+    }
+
+    protected function httpFallback(string $url, array $config): string
+    {
+        $userAgent = $config['user_agent'] ?? 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+        $timeout = ($config['timeout'] ?? 30000) / 1000;
+
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => $timeout,
+                'user_agent' => $userAgent,
+                'follow_location' => true,
+                'max_redirects' => 5,
+                'header' => [
+                    'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language: en-US,en;q=0.5',
+                    'Accept-Encoding: gzip, deflate',
+                    'Connection: keep-alive',
+                    'Upgrade-Insecure-Requests: 1',
+                ]
+            ]
+        ]);
+
+        $html = file_get_contents($url, false, $context);
+        
+        if ($html === false) {
+            throw new \RuntimeException("Failed to fetch URL with HTTP fallback: {$url}");
+        }
+
+        return $html;
+    }
 }

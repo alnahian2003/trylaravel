@@ -36,6 +36,53 @@ class BrowserFactory
             }
         }
 
+        // Production-ready Chrome arguments
+        $defaultArgs = [
+            '--no-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--disable-extensions',
+            '--disable-plugins',
+            '--disable-default-apps',
+            '--disable-sync',
+            '--metrics-recording-only',
+            '--no-first-run',
+            '--safebrowsing-disable-auto-update',
+            '--disable-crash-reporter',
+            '--disable-in-process-stack-traces',
+            '--disable-logging',
+            '--log-level=3',
+            '--silent',
+        ];
+
+        // Add custom args if provided
+        $args = $config['args'] ?? $defaultArgs;
+        foreach ($args as $arg) {
+            $browser->addChromiumArgument($arg);
+        }
+
+        // In production, try to use system Chrome
+        if (app()->environment('production')) {
+            $chromePaths = [
+                '/usr/bin/chromium-browser',
+                '/usr/bin/google-chrome',
+                '/usr/bin/chromium',
+                '/opt/google/chrome/chrome',
+            ];
+
+            foreach ($chromePaths as $path) {
+                if (file_exists($path)) {
+                    $browser->setChromePath($path);
+                    break;
+                }
+            }
+        }
+
         $browser->ignoreHttpsErrors();
         $browser->dismissDialogs();
 
