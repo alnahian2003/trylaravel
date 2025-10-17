@@ -68,4 +68,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(PostBookmark::class);
     }
+
+    public function sources()
+    {
+        return $this->hasMany(Source::class);
+    }
 }

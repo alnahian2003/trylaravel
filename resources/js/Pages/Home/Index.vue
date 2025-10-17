@@ -1,6 +1,12 @@
 <script setup>
-import { Head, Link, usePage, InfiniteScroll } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link, usePage, InfiniteScroll, useForm } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import Modal from '@/Components/Modal.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import InputError from '@/Components/InputError.vue';
 
 const props = defineProps({
     posts: Object,
@@ -11,6 +17,30 @@ const props = defineProps({
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const isAuthenticated = computed(() => !!user.value);
+
+// Add Source Modal
+const showAddSourceModal = ref(false);
+
+const openAddSourceModal = () => {
+    showAddSourceModal.value = true;
+};
+
+const closeAddSourceModal = () => {
+    showAddSourceModal.value = false;
+    addSourceForm.reset();
+};
+
+const addSourceForm = useForm({
+    url: '',
+});
+
+const submitAddSource = () => {
+    addSourceForm.post(route('sources.store'), {
+        onSuccess: () => {
+            closeAddSourceModal();
+        },
+    });
+};
 
 const getPostTypeIcon = (type) => {
     // This function is used for reference but icons are inline in template
@@ -121,7 +151,7 @@ const getPostTypeColors = (type) => {
                         <div class="bg-white rounded-xl border border-gray-200 p-6">
                             <h3 class="font-bold text-gray-900 mb-4 text-lg">Quick Actions</h3>
                             <div class="space-y-3">
-                                <button class="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center space-x-2">
+                                <button @click="openAddSourceModal" class="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center space-x-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                     </svg>
@@ -394,6 +424,60 @@ const getPostTypeColors = (type) => {
                 </div>
             </div>
         </div>
+
+        <!-- Add Source Modal -->
+        <Modal :show="showAddSourceModal" @close="closeAddSourceModal" maxWidth="lg">
+            <div class="p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Add New Source</h2>
+                    <button @click="closeAddSourceModal" class="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <form @submit.prevent="submitAddSource">
+                    <div class="mb-6">
+                        <InputLabel for="source_url" value="Website URL" class="block text-sm font-semibold text-gray-700 mb-3" />
+                        <TextInput
+                            id="source_url"
+                            v-model="addSourceForm.url"
+                            type="url"
+                            placeholder="https://example.com"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                            required
+                        />
+                        <InputError class="mt-2" :message="addSourceForm.errors.url" />
+                        <p class="mt-3 text-sm text-gray-500">Enter any website URL and we'll find the content automatically</p>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-8">
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-blue-600 mr-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <h4 class="font-semibold text-blue-900 mb-2">How it works</h4>
+                                <p class="text-sm text-blue-800">Just paste any website URL. We'll automatically detect and add their content feeds for you.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <SecondaryButton @click="closeAddSourceModal" class="flex-1">
+                            Cancel
+                        </SecondaryButton>
+                        <PrimaryButton type="submit" :disabled="addSourceForm.processing" class="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Add Source
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </Modal>
     </div>
 </template>
 

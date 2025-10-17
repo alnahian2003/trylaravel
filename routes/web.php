@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\LikedPostsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SourceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -29,6 +30,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post:slug}/like', [HomeController::class, 'toggleLike'])->name('posts.like');
     Route::post('/posts/{post:slug}/bookmark', [HomeController::class, 'toggleBookmark'])->name('posts.bookmark');
     Route::post('/posts/{post:slug}/report', [HomeController::class, 'reportPost'])->name('posts.report');
+
+    // Sources
+    Route::post('/sources', [SourceController::class, 'store'])->name('sources.store');
+    Route::delete('/sources/{source}', [SourceController::class, 'destroy'])->name('sources.destroy');
 });
 
 require __DIR__.'/auth.php';
