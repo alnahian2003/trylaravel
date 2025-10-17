@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\LikedPostsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,6 +21,9 @@ Route::middleware('auth')->group(function () {
 
     // Library
     Route::get('/library', [LibraryController::class, 'index'])->name('library');
+
+    // Liked Posts
+    Route::get('/liked-posts', [LikedPostsController::class, 'index'])->name('liked-posts');
 
     // Post interactions
     Route::post('/posts/{post:slug}/like', [HomeController::class, 'toggleLike'])->name('posts.like');
