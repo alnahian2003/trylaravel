@@ -1,0 +1,29 @@
+site_key: "codecourse"
+name: "Codecourse"
+base_url: "https://codecourse.com"
+articles_url: "https://codecourse.com/articles"
+rate_limit: 2000
+
+selectors:
+  article_links: "h2 a[href*='/articles/']"
+  title: "h1"
+  content: ".prose"
+  excerpt: "meta[name='description']"
+  author: ".font-semibold.bg-gradient-to-r"
+  author_avatar: "img[src*='codecourse-avatars']"
+  published_at: ".text-xs.uppercase.font-medium"
+  reading_time: ".text-xs.uppercase.font-medium"
+  tags: ".rounded-full.bg-\\[rgba\\(27\\,32\\,74\\,1\\)\\]"
+  featured_image: "meta[property='og:image']"
+
+browser:
+  timeout: 30000
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+  wait_until_network_idle: true
+  headers:
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    Accept-Language: "en-US,en;q=0.5"
+
+retry:
+  max_attempts: 3
+  delay_ms: 1000
