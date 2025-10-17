@@ -132,6 +132,9 @@ class HomePageTest extends TestCase
                 ->has('duration')
                 ->has('featured_image')
                 ->has('meta')
+                ->has('is_liked')
+                ->has('is_bookmarked')
+                ->has('is_seen')
             )
         );
     }
