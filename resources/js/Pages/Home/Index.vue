@@ -1,9 +1,9 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage, InfiniteScroll } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props = defineProps({
-    posts: Array,
+    posts: Object,
     stats: Object,
     filters: Object,
 });
@@ -145,7 +145,7 @@ const getPostTypeColors = (type) => {
                         <!-- Statistics -->
                         <div class="bg-white rounded-xl border border-gray-200 p-6">
                             <h3 class="font-bold text-gray-900 mb-4 text-lg">Content Stats</h3>
-                            <div class="space-y-3">
+                            <div v-if="stats" class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm font-medium text-gray-700">Blog Posts</span>
                                     <span class="text-xs text-gray-500">{{ stats.posts_by_type.posts }}</span>
@@ -159,15 +159,37 @@ const getPostTypeColors = (type) => {
                                     <span class="text-xs text-gray-500">{{ stats.posts_by_type.podcasts }}</span>
                                 </div>
                             </div>
+                            <div v-else class="space-y-3">
+                                <!-- Loading skeleton for stats -->
+                                <div class="flex items-center justify-between">
+                                    <div class="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="h-4 bg-gray-200 rounded w-18 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Trending -->
                         <div class="bg-white rounded-xl border border-gray-200 p-6">
                             <h3 class="font-bold text-gray-900 mb-4 text-lg">Trending</h3>
-                            <div class="space-y-3">
+                            <div v-if="stats?.trending_tags" class="space-y-3">
                                 <div v-for="tag in stats.trending_tags.slice(0, 5)" :key="tag.name" class="flex items-center justify-between">
                                     <span class="text-sm font-medium text-gray-700">#{{ tag.name }}</span>
                                     <span class="text-xs text-gray-500">{{ tag.count }} posts</span>
+                                </div>
+                            </div>
+                            <div v-else class="space-y-3">
+                                <!-- Loading skeleton for trending -->
+                                <div v-for="i in 5" :key="i" class="flex items-center justify-between">
+                                    <div class="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-12 animate-pulse"></div>
                                 </div>
                             </div>
                         </div>
@@ -176,8 +198,9 @@ const getPostTypeColors = (type) => {
 
                 <!-- Main Feed -->
                 <div class="lg:col-span-3">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <article v-for="post in posts" :key="post.id" class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+                    <InfiniteScroll data="posts" :buffer="500">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <article v-for="post in posts.data" :key="post.id" class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
                             <!-- Video Thumbnail (if video) -->
                             <div v-if="post.type.value === 'video'" class="relative rounded-t-2xl overflow-hidden">
                                 <div class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
@@ -282,7 +305,8 @@ const getPostTypeColors = (type) => {
                                 </div>
                             </div>
                         </article>
-                    </div>
+                        </div>
+                    </InfiniteScroll>
                 </div>
             </div>
 
@@ -302,9 +326,10 @@ const getPostTypeColors = (type) => {
                     </div>
                 </div>
 
-                <!-- Public Feed -->
-                <div class="grid md:grid-cols-2 gap-8">
-                    <article v-for="post in posts.slice(0, 6)" :key="post.id" class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+                <!-- Public Feed (Limited to first 6 posts for non-auth users) -->
+                <InfiniteScroll data="posts" :buffer="500">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <article v-for="post in posts.data.slice(0, 6)" :key="post.id" class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
                         <div class="p-6">
                             <!-- Source Header -->
                             <div class="flex items-center justify-between mb-4">
@@ -353,6 +378,15 @@ const getPostTypeColors = (type) => {
                             </div>
                         </div>
                     </article>
+                    </div>
+                </InfiniteScroll>
+
+                <!-- Sign-up prompt for non-auth users -->
+                <div class="mt-8 text-center">
+                    <p class="text-gray-600 mb-4">Want to see more content and unlock all features?</p>
+                    <Link :href="route('register')" class="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                        Join LaravelSense
+                    </Link>
                 </div>
             </div>
         </div>
@@ -372,5 +406,31 @@ const getPostTypeColors = (type) => {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
