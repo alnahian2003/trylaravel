@@ -51,11 +51,15 @@
 
                     <!-- Sort & View Options -->
                     <div class="flex items-center space-x-3">
-                        <select class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
-                            <option>Newest First</option>
-                            <option>Oldest First</option>
-                            <option>Most Read</option>
-                            <option>Alphabetical</option>
+                        <select 
+                            v-model="selectedSort"
+                            @change="updateSorting"
+                            class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                        >
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="most_read">Most Read</option>
+                            <option value="alphabetical">Alphabetical</option>
                         </select>
                         <div class="flex items-center space-x-1 bg-gray-100 rounded-xl p-1">
                             <button class="bg-white text-gray-700 px-3 py-2 rounded-lg text-sm shadow-sm">
@@ -158,9 +162,11 @@ const props = defineProps({
     categoryCounts: Object,
     totalBookmarks: Number,
     selectedCategory: String,
+    selectedSort: String,
 })
 
 const selectedCategory = ref(props.selectedCategory || null)
+const selectedSort = ref(props.selectedSort || 'newest')
 
 const getCategoryIcon = (category) => {
     const icons = {
@@ -206,7 +212,21 @@ const formatDate = (dateString) => {
 
 const filterByCategory = (category) => {
     selectedCategory.value = category
-    const params = category ? { category } : {}
+    const params = {
+        ...(category && { category }),
+        ...(selectedSort.value !== 'newest' && { sort: selectedSort.value })
+    }
+    router.get(route('library'), params, {
+        preserveState: true,
+        preserveScroll: true,
+    })
+}
+
+const updateSorting = () => {
+    const params = {
+        ...(selectedCategory.value && { category: selectedCategory.value }),
+        ...(selectedSort.value !== 'newest' && { sort: selectedSort.value })
+    }
     router.get(route('library'), params, {
         preserveState: true,
         preserveScroll: true,
@@ -214,10 +234,13 @@ const filterByCategory = (category) => {
 }
 
 const navigateToPost = (slug, event = null) => {
+    // If event is provided, it means the click came from the card
+    // We don't need to prevent default since we're using router.visit
     router.visit(route('posts.show', slug))
 }
 
 const removeBookmark = (postId) => {
+    // This would make an API call to remove the bookmark
     console.log('Remove bookmark for post:', postId)
 }
 </script>

@@ -14,6 +14,7 @@ class LibraryController extends Controller
     {
         $user = $request->user();
         $selectedCategory = $request->get('category');
+        $sortBy = $request->get('sort', 'newest');
 
         // Single optimized query with joins for O(1) complexity
         $query = Post::select([
@@ -33,17 +34,20 @@ class LibraryController extends Controller
             });
         }
 
+        // Apply sorting
+        $query = $this->applySorting($query, $sortBy);
+
         // Get category counts in a single query using DB aggregation
         $categoryCounts = $this->getCategoryCounts($user);
 
         return Inertia::render('Library/Index', [
-            'bookmarks' => Inertia::scroll(fn () => $query->orderBy('post_bookmarks.created_at', 'desc')
-                ->paginate(12)
+            'bookmarks' => Inertia::scroll(fn () => $query->paginate(12)
                 ->appends($request->query())
             ),
             'categoryCounts' => $categoryCounts,
             'totalBookmarks' => $this->getTotalBookmarks($user),
             'selectedCategory' => $selectedCategory,
+            'selectedSort' => $sortBy,
         ]);
     }
 
@@ -85,5 +89,17 @@ class LibraryController extends Controller
             ->whereNotNull('posts.published_at')
             ->where('posts.published_at', '<=', now())
             ->count();
+    }
+
+    private function applySorting($query, string $sortBy)
+    {
+        return match ($sortBy) {
+            'newest' => $query->orderBy('post_bookmarks.created_at', 'desc'),
+            'oldest' => $query->orderBy('post_bookmarks.created_at', 'asc'),
+            'most_read' => $query->orderBy('posts.views_count', 'desc')
+                ->orderBy('post_bookmarks.created_at', 'desc'),
+            'alphabetical' => $query->orderBy('posts.title', 'asc'),
+            default => $query->orderBy('post_bookmarks.created_at', 'desc'),
+        };
     }
 }
