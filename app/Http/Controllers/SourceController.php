@@ -5,9 +5,29 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AddSourceRequest;
 use App\Models\Source;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class SourceController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+        $sources = $user->sources()->orderBy('created_at', 'desc')->get();
+
+        // Calculate stats
+        $stats = [
+            'active_sources' => $sources->where('is_active', true)->count(),
+            'total_articles' => $sources->sum('posts_count') ?: 0,
+            'last_updated' => $sources->whereNotNull('last_fetched_at')
+                ->max('last_fetched_at')?->diffForHumans() ?? 'Never',
+        ];
+
+        return Inertia::render('Sources/Index', [
+            'sources' => $sources,
+            'stats' => $stats,
+        ]);
+    }
+
     public function store(AddSourceRequest $request)
     {
         $feedUrl = $request->validated()['url'];

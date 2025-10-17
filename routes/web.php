@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post:slug}/report', [HomeController::class, 'reportPost'])->name('posts.report');
 
     // Sources
+    Route::get('/sources', [SourceController::class, 'index'])->name('sources.index');
     Route::post('/sources', [SourceController::class, 'store'])->name('sources.store');
     Route::delete('/sources/{source}', [SourceController::class, 'destroy'])->name('sources.destroy');
 });
