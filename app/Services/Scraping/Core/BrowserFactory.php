@@ -75,8 +75,9 @@ class BrowserFactory
 
         // Try to use system Chrome if available (both local and production)
         $chromePaths = [
+            '/usr/bin/google-chrome',        // Prefer Google Chrome over Chromium
+            '/usr/bin/google-chrome-stable', // Alternative Google Chrome path
             '/usr/bin/chromium-browser',
-            '/usr/bin/google-chrome',
             '/usr/bin/chromium',
             '/opt/google/chrome/chrome',
         ];
@@ -84,6 +85,23 @@ class BrowserFactory
         foreach ($chromePaths as $path) {
             if (file_exists($path)) {
                 $browser->setChromePath($path);
+                break;
+            }
+        }
+
+        // Set Node.js and NPM paths if they exist
+        $nodePaths = ['/usr/bin/node', '/usr/local/bin/node'];
+        foreach ($nodePaths as $path) {
+            if (file_exists($path)) {
+                $browser->setNodeBinary($path);
+                break;
+            }
+        }
+
+        $npmPaths = ['/usr/bin/npm', '/usr/local/bin/npm'];
+        foreach ($npmPaths as $path) {
+            if (file_exists($path)) {
+                $browser->setNpmBinary($path);
                 break;
             }
         }
