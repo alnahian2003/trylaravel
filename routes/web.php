@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
     // Post interactions
     Route::post('/posts/{post:slug}/like', [HomeController::class, 'toggleLike'])->name('posts.like');
     Route::post('/posts/{post:slug}/bookmark', [HomeController::class, 'toggleBookmark'])->name('posts.bookmark');
+    Route::post('/posts/{post:slug}/mark-seen', [HomeController::class, 'markAsSeen'])->name('posts.mark-seen');
+    Route::post('/posts/{post:slug}/mark-unseen', [HomeController::class, 'markAsUnseen'])->name('posts.mark-unseen');
     Route::post('/posts/{post:slug}/report', [HomeController::class, 'reportPost'])->name('posts.report');
 
     // Sources

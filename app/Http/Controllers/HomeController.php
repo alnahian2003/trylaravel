@@ -43,6 +43,10 @@ class HomeController extends Controller
                         'tags' => $post->tags,
                         'featured_image' => $post->featured_image,
                         'meta' => $post->meta,
+                        // User interactions
+                        'is_liked' => $post->isLikedBy(auth()->user()),
+                        'is_bookmarked' => $post->isBookmarkedBy(auth()->user()),
+                        'is_seen' => $post->isSeenBy(auth()->user()),
                     ];
                 })
             ),
@@ -125,6 +129,7 @@ class HomeController extends Controller
                 // User interactions
                 'is_liked' => $post->isLikedBy(auth()->user()),
                 'is_bookmarked' => $post->isBookmarkedBy(auth()->user()),
+                'is_seen' => $post->isSeenBy(auth()->user()),
             ],
             'relatedPosts' => Post::query()
                 ->published()
@@ -216,6 +221,26 @@ class HomeController extends Controller
 
         return response()->json([
             'is_bookmarked' => $isBookmarked,
+        ]);
+    }
+
+    public function markAsSeen(Post $post): \Illuminate\Http\JsonResponse
+    {
+        $user = auth()->user();
+        $isSeen = $post->markAsSeen($user);
+
+        return response()->json([
+            'is_seen' => $isSeen,
+        ]);
+    }
+
+    public function markAsUnseen(Post $post): \Illuminate\Http\JsonResponse
+    {
+        $user = auth()->user();
+        $post->markAsUnseen($user);
+
+        return response()->json([
+            'is_seen' => false,
         ]);
     }
 
