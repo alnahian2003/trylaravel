@@ -256,6 +256,12 @@ class Post extends Model
             ->withTimestamps();
     }
 
+    public function seenBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'post_seen')
+            ->withTimestamps();
+    }
+
     // User interaction helper methods
     public function isLikedBy(?User $user): bool
     {
@@ -273,6 +279,15 @@ class Post extends Model
         }
 
         return $this->bookmarks()->where('user_id', $user->id)->exists();
+    }
+
+    public function isSeenBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->seenBy()->where('user_id', $user->id)->exists();
     }
 
     public function toggleLike(User $user): bool
@@ -307,5 +322,27 @@ class Post extends Model
                 return true;
             })(),
         };
+    }
+
+    public function markAsSeen(User $user): bool
+    {
+        if ($this->isSeenBy($user)) {
+            return true; // Already marked as seen
+        }
+
+        $this->seenBy()->attach($user->id);
+
+        return true;
+    }
+
+    public function markAsUnseen(User $user): bool
+    {
+        if (! $this->isSeenBy($user)) {
+            return true; // Already not seen, operation successful
+        }
+
+        $this->seenBy()->detach($user->id);
+
+        return true; // Successfully unmarked as seen
     }
 }

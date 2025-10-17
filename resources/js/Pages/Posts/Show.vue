@@ -22,9 +22,11 @@ const readingProgress = ref(0);
 // Reactive state for user interactions
 const isLiked = ref(props.post.is_liked);
 const isBookmarked = ref(props.post.is_bookmarked);
+const isSeen = ref(props.post.is_seen);
 const likesCount = ref(props.post.likes_count);
 const isLiking = ref(false);
 const isBookmarking = ref(false);
+const isMarkingSeen = ref(false);
 const showShareModal = ref(false);
 const showReportModal = ref(false);
 const isReporting = ref(false);
@@ -111,7 +113,7 @@ const toggleBookmark = async () => {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
                 'Accept': 'application/json'
-            },
+            }
         });
         
         if (!response.ok) {
@@ -128,6 +130,70 @@ const toggleBookmark = async () => {
         handleApiError(err, 'Failed to update bookmark status');
     } finally {
         isBookmarking.value = false;
+    }
+};
+
+const markAsSeen = async () => {
+    if (!isAuthenticated.value || isMarkingSeen.value || isSeen.value) return;
+    
+    isMarkingSeen.value = true;
+    
+    try {
+        const response = await fetch(route('posts.mark-seen', props.post.slug), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        isSeen.value = data.is_seen;
+        
+        success('Post marked as seen!');
+    } catch (err) {
+        console.error('Error marking as seen:', err);
+        handleApiError(err, 'Failed to mark post as seen');
+    } finally {
+        isMarkingSeen.value = false;
+    }
+};
+
+const markAsUnseen = async () => {
+    if (!isAuthenticated.value || isMarkingSeen.value || !isSeen.value) return;
+    
+    isMarkingSeen.value = true;
+    
+    try {
+        const response = await fetch(route('posts.mark-unseen', props.post.slug), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        isSeen.value = data.is_seen;
+        
+        success('Post marked as unseen!');
+    } catch (err) {
+        console.error('Error marking as unseen:', err);
+        handleApiError(err, 'Failed to mark post as unseen');
+    } finally {
+        isMarkingSeen.value = false;
     }
 };
 
@@ -308,6 +374,34 @@ onUnmounted(() => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                             </svg>
                             {{ isBookmarked ? 'Saved' : 'Save' }}
+                        </button>
+                        
+                        <!-- Mark as Seen Button -->
+                        <button 
+                            v-if="isAuthenticated && !isSeen" 
+                            @click="markAsSeen" 
+                            :disabled="isMarkingSeen" 
+                            class="px-4 py-2 rounded-xl transition-colors font-medium text-gray-600 hover:text-green-600 hover:bg-green-50"
+                            title="Mark as seen"
+                        >
+                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Mark as Seen
+                        </button>
+                        
+                        <!-- Mark as Unseen Button -->
+                        <button 
+                            v-if="isAuthenticated && isSeen" 
+                            @click="markAsUnseen" 
+                            :disabled="isMarkingSeen" 
+                            class="px-4 py-2 rounded-xl transition-colors font-medium bg-green-50 text-green-600 hover:text-gray-600 hover:bg-gray-50"
+                            title="Mark as unseen"
+                        >
+                            <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Seen
                         </button>
                         <button @click="sharePost" class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors font-medium">
                             <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
