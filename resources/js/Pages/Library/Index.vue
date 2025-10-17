@@ -76,6 +76,7 @@
                         v-for="post in bookmarks.data" 
                         :key="post.id"
                         class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all group cursor-pointer"
+                        @click="navigateToPost(post.slug, $event)"
                     >
                         <div class="p-6">
                             <div class="flex items-start justify-between mb-4">
@@ -88,7 +89,7 @@
                                     {{ post.categories[0].toUpperCase() }}
                                 </span>
                                 <button 
-                                    @click="removeBookmark(post.id)"
+                                    @click.stop="removeBookmark(post.id)"
                                     class="text-gray-400 hover:text-red-600 transition-colors p-1 hover:bg-gray-100 rounded-lg"
                                 >
                                     <i class="fas fa-trash-alt"></i>
@@ -115,12 +116,12 @@
                                     <i class="far fa-clock mr-1"></i>
                                     Saved {{ formatDate(post.created_at) }}
                                 </span>
-                                <Link 
-                                    :href="route('posts.show', post.slug)"
+                                <button 
+                                    @click.stop="navigateToPost(post.slug)"
                                     class="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl"
                                 >
                                     Read
-                                </Link>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -212,8 +213,11 @@ const filterByCategory = (category) => {
     })
 }
 
+const navigateToPost = (slug, event = null) => {
+    router.visit(route('posts.show', slug))
+}
+
 const removeBookmark = (postId) => {
-    // This would make an API call to remove the bookmark
     console.log('Remove bookmark for post:', postId)
 }
 </script>
