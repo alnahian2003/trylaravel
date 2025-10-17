@@ -58,6 +58,116 @@ class HomeController extends Controller
         ]);
     }
 
+    public function show(Post $post): Response
+    {
+        if (! $post->is_published) {
+            abort(404);
+        }
+
+        $post->incrementViews();
+
+        // Get previous post (older)
+        $previousPost = Post::query()
+            ->published()
+            ->where('published_at', '<', $post->published_at)
+            ->orderBy('published_at', 'desc')
+            ->first();
+
+        // Get next post (newer)
+        $nextPost = Post::query()
+            ->published()
+            ->where('published_at', '>', $post->published_at)
+            ->orderBy('published_at', 'asc')
+            ->first();
+
+        return Inertia::render('Posts/Show', [
+            'post' => [
+                'id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'excerpt' => $post->excerpt,
+                'content' => $post->content,
+                'type' => [
+                    'value' => $post->type->value,
+                    'label' => $post->getTypeLabel(),
+                    'icon' => $post->getTypeIcon(),
+                    'color' => $post->getTypeColor(),
+                ],
+                'status' => [
+                    'value' => $post->status->value,
+                    'label' => $post->getStatusLabel(),
+                    'color' => $post->getStatusColor(),
+                ],
+                'author' => [
+                    'name' => $post->author_name,
+                    'email' => $post->author_email,
+                    'avatar' => $post->author_avatar,
+                ],
+                'published_at' => $post->published_at?->diffForHumans(),
+                'formatted_published_at' => $post->published_at?->format('F j, Y'),
+                'views_count' => $post->views_count,
+                'likes_count' => $post->likes_count,
+                'duration' => $post->formatted_duration,
+                'tags' => $post->tags,
+                'categories' => $post->categories,
+                'featured_image' => $post->featured_image,
+                'meta' => $post->meta,
+                'source_url' => $post->source_url,
+                'file_url' => $post->file_url,
+                'file_size' => $post->formatted_file_size,
+                'file_type' => $post->file_type,
+            ],
+            'relatedPosts' => Post::query()
+                ->published()
+                ->where('id', '!=', $post->id)
+                ->where('type', $post->type)
+                ->latest('published_at')
+                ->limit(3)
+                ->get()
+                ->map(function (Post $relatedPost) {
+                    return [
+                        'id' => $relatedPost->id,
+                        'title' => $relatedPost->title,
+                        'slug' => $relatedPost->slug,
+                        'excerpt' => $relatedPost->excerpt,
+                        'type' => [
+                            'value' => $relatedPost->type->value,
+                            'label' => $relatedPost->getTypeLabel(),
+                            'icon' => $relatedPost->getTypeIcon(),
+                            'color' => $relatedPost->getTypeColor(),
+                        ],
+                        'author' => [
+                            'name' => $relatedPost->author_name,
+                            'avatar' => $relatedPost->author_avatar,
+                        ],
+                        'published_at' => $relatedPost->published_at?->diffForHumans(),
+                        'views_count' => $relatedPost->views_count,
+                        'likes_count' => $relatedPost->likes_count,
+                        'duration' => $relatedPost->formatted_duration,
+                        'featured_image' => $relatedPost->featured_image,
+                    ];
+                }),
+            'navigation' => [
+                'previous' => $previousPost ? [
+                    'title' => $previousPost->title,
+                    'slug' => $previousPost->slug,
+                    'type' => [
+                        'label' => $previousPost->getTypeLabel(),
+                        'icon' => $previousPost->getTypeIcon(),
+                    ],
+                ] : null,
+                'next' => $nextPost ? [
+                    'title' => $nextPost->title,
+                    'slug' => $nextPost->slug,
+                    'type' => [
+                        'label' => $nextPost->getTypeLabel(),
+                        'icon' => $nextPost->getTypeIcon(),
+                    ],
+                ] : null,
+            ],
+        ]);
+    }
+
     private function getTrendingTags(): array
     {
         $allTags = Post::published()

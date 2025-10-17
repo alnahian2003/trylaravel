@@ -242,9 +242,11 @@ const getPostTypeColors = (type) => {
                                 </div>
 
                                 <!-- Content -->
-                                <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
-                                    {{ post.title }}
-                                </h3>
+                                <Link :href="route('posts.show', post.slug)">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                                        {{ post.title }}
+                                    </h3>
+                                </Link>
                                 
                                 <p v-if="post.excerpt" class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
                                     {{ post.excerpt }}
@@ -299,9 +301,9 @@ const getPostTypeColors = (type) => {
                                             </svg>
                                         </button>
                                     </div>
-                                    <button class="text-red-600 hover:text-red-700 font-medium">
+                                     <Link :href="route('posts.show', post.slug)" class="text-red-600 hover:text-red-700 font-medium">
                                         {{ getPostAction(post) }}
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </article>
@@ -347,9 +349,11 @@ const getPostTypeColors = (type) => {
                             </div>
 
                             <!-- Content -->
-                            <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
-                                {{ post.title }}
-                            </h3>
+                            <Link :href="route('posts.show', post.slug)">
+                                <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                                    {{ post.title }}
+                                </h3>
+                            </Link>
                             
                             <p v-if="post.excerpt" class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
                                 {{ post.excerpt }}
@@ -372,9 +376,9 @@ const getPostTypeColors = (type) => {
                                         <span>{{ post.likes_count }}</span>
                                     </span>
                                 </div>
-                                <button class="text-red-600 hover:text-red-700 font-medium">
+                                <Link :href="route('posts.show', post.slug)" class="text-red-600 hover:text-red-700 font-medium">
                                     {{ getPostAction(post) }}
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </article>
