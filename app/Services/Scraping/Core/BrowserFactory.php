@@ -8,7 +8,13 @@ class BrowserFactory
 {
     public static function create(array $config = []): Browsershot
     {
-        $browser = Browsershot::html('<html></html>');
+        // Create browser instance without initial HTML if we have a URL
+        if (isset($config['url'])) {
+            $browser = Browsershot::url($config['url']);
+            unset($config['url']); // Remove URL from config to avoid conflicts
+        } else {
+            $browser = Browsershot::html('<html></html>');
+        }
 
         if (isset($config['timeout'])) {
             $browser->timeout($config['timeout']);
@@ -90,10 +96,12 @@ class BrowserFactory
 
     public static function scrapeUrl(string $url, array $config = []): string
     {
+        // Pass URL in config so it's used during browser creation
+        $config['url'] = $url;
         $browser = self::create($config);
         
         try {
-            return $browser->url($url)->bodyHtml();
+            return $browser->bodyHtml();
         } catch (\Exception $e) {
             throw new \RuntimeException("Failed to scrape URL: {$url}. Error: " . $e->getMessage(), 0, $e);
         }
