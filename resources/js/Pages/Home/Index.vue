@@ -9,11 +9,13 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import { useToast } from '@/composables/useToast';
 import ToastContainer from '@/Components/ToastContainer.vue';
+import SourcesWidget from '@/Components/SourcesWidget.vue';
 
 const props = defineProps({
     posts: Object,
     stats: Object,
     filters: Object,
+    userSources: Array,
 });
 
 const page = usePage();
@@ -189,6 +191,12 @@ const getPostTypeColors = (type) => {
                                 </Link>
                             </div>
                         </div>
+
+                        <!-- Sources Widget -->
+                        <SourcesWidget 
+                            :sources="userSources" 
+                            @add-source="openAddSourceModal"
+                        />
 
                         <!-- Statistics -->
                         <div class="bg-white rounded-xl border border-gray-200 p-6">

@@ -7,6 +7,7 @@ use App\Http\Requests\ReportPostRequest;
 use App\Models\Post;
 use App\Models\Report;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -54,6 +55,11 @@ class HomeController extends Controller
                 ],
                 'trending_tags' => $this->getTrendingTags(),
             ]),
+            'userSources' => Auth::check() ? Auth::user()->sources()
+                ->orderByDesc('is_active')
+                ->orderByDesc('posts_count')
+                ->limit(10)
+                ->get(['id', 'name', 'url', 'favicon_url', 'is_active', 'posts_count']) : null,
             'filters' => [
                 'types' => PostType::options(),
             ],
