@@ -46,6 +46,17 @@ const closeAddSourceModal = () => {
     addSourceForm.reset();
 };
 
+// Guest Prompt Modal
+const showGuestModal = ref(false);
+
+const showGuestPrompt = () => {
+    showGuestModal.value = true;
+};
+
+const closeGuestModal = () => {
+    showGuestModal.value = false;
+};
+
 const addSourceForm = useForm({
     url: '',
 });
@@ -558,87 +569,294 @@ const getPostTypeColors = (type) => {
             </div>
 
             <!-- Non-Authenticated User Layout -->
-            <div v-else class="max-w-2xl mx-auto">
+            <div v-else class="flex flex-col lg:grid lg:grid-cols-4 gap-6 lg:gap-12">
+                
                 <!-- Welcome Banner -->
-                <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-8 mb-8 text-white text-center">
-                    <h1 class="text-2xl font-bold mb-2">Welcome to LaravelSense</h1>
-                    <p class="text-red-100 mb-6">Discover the latest Laravel content from top creators in the community</p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link :href="route('login')" class="bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                <div class="lg:col-span-4 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-6 sm:p-8 text-white text-center">
+                    <h1 class="text-xl sm:text-2xl font-bold mb-2">Welcome to LaravelSense</h1>
+                    <p class="text-red-100 mb-4 sm:mb-6 text-sm sm:text-base">Discover the latest Laravel content from top creators in the community</p>
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                        <Link :href="route('login')" class="bg-white text-red-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-sm sm:text-base">
                             Sign In
                         </Link>
-                        <Link :href="route('register')" class="bg-red-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-800 transition-colors">
+                        <Link :href="route('register')" class="bg-red-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-red-800 transition-colors text-sm sm:text-base">
                             Join Free
                         </Link>
                     </div>
                 </div>
 
-                <!-- Public Feed (Limited to first 6 posts for non-auth users) -->
-                <InfiniteScroll data="posts" :buffer="500">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <article v-for="post in posts.data.slice(0, 6)" :key="post.id" class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
-                        <div class="p-6">
-                            <!-- Source Header -->
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-9 h-9 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center">
-                                        <span v-if="post.author.name" class="text-white font-semibold text-sm">
-                                            {{ post.author.name.charAt(0).toUpperCase() }}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-gray-900">{{ post.author.name || 'Anonymous' }}</div>
-                                        <div class="text-gray-500 text-sm">{{ post.published_at }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Content -->
-                            <Link :href="route('posts.show', post.slug)">
-                                <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
-                                    {{ post.title }}
-                                </h3>
-                            </Link>
-                            
-                            <p v-if="post.excerpt" class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
-                                {{ post.excerpt }}
-                            </p>
-
-                            <!-- Tags -->
-                            <div v-if="post.tags && post.tags.length" class="flex items-center flex-wrap gap-2 mb-6">
-                                <span v-for="tag in post.tags.slice(0, 2)" :key="tag" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium">
-                                    {{ tag }}
-                                </span>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                                <div class="flex items-center space-x-6 text-sm text-gray-500">
-                                    <span class="flex items-center space-x-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                        </svg>
-                                        <span>{{ post.likes_count }}</span>
-                                    </span>
-                                </div>
-                                <Link :href="route('posts.show', post.slug)" class="text-red-600 hover:text-red-700 font-medium">
-                                    {{ getPostAction(post) }}
+                <!-- Left Sidebar - Stats and Info -->
+                <div class="hidden lg:block lg:col-span-1">
+                    <div class="sticky top-24 space-y-6">
+                        
+                        <!-- Guest Call to Action -->
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <h3 class="font-bold text-gray-900 mb-4 text-lg">Join the Community</h3>
+                            <div class="space-y-3">
+                                <Link :href="route('register')" class="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                    </svg>
+                                    <span>Sign Up Free</span>
+                                </Link>
+                                <Link :href="route('login')" class="block w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center">
+                                    Already have an account?
                                 </Link>
                             </div>
                         </div>
-                    </article>
-                    </div>
-                </InfiniteScroll>
 
-                <!-- Sign-up prompt for non-auth users -->
-                <div class="mt-8 text-center">
-                    <p class="text-gray-600 mb-4">Want to see more content and unlock all features?</p>
-                    <Link :href="route('register')" class="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors">
-                        Join LaravelSense
-                    </Link>
+                        <!-- Statistics -->
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <h3 class="font-bold text-gray-900 mb-4 text-lg">Content Stats</h3>
+                            <div v-if="stats" class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Blog Posts</span>
+                                    <span class="text-xs text-gray-500">{{ stats.posts_by_type.posts }}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Videos</span>
+                                    <span class="text-xs text-gray-500">{{ stats.posts_by_type.videos }}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Podcasts</span>
+                                    <span class="text-xs text-gray-500">{{ stats.posts_by_type.podcasts }}</span>
+                                </div>
+                            </div>
+                            <div v-else class="space-y-3">
+                                <!-- Loading skeleton for stats -->
+                                <div class="flex items-center justify-between">
+                                    <div class="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="h-4 bg-gray-200 rounded w-18 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-8 animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trending -->
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <h3 class="font-bold text-gray-900 mb-4 text-lg">Trending</h3>
+                            <div v-if="stats?.trending_tags" class="space-y-3">
+                                <div v-for="tag in stats.trending_tags.slice(0, 5)" :key="tag.name" class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">#{{ tag.name }}</span>
+                                    <span class="text-xs text-gray-500">{{ tag.count }} posts</span>
+                                </div>
+                            </div>
+                            <div v-else class="space-y-3">
+                                <!-- Loading skeleton for trending -->
+                                <div v-for="i in 5" :key="i" class="flex items-center justify-between">
+                                    <div class="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-12 animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Feed -->
+                <div class="w-full lg:col-span-3">
+                    <InfiniteScroll data="posts" :buffer="500">
+                        <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:gap-8">
+                            <article v-for="post in posts.data" :key="post.id" class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
+                            <!-- Video Thumbnail (if video) -->
+                            <div v-if="post.type.value === 'video'" class="relative rounded-t-2xl overflow-hidden">
+                                <div class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                    <img v-if="post.featured_image" :src="post.featured_image" :alt="post.title" class="w-full h-full object-cover">
+                                    <div v-else class="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                                        <svg class="w-6 h-6 text-red-600 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div v-if="post.duration" class="absolute bottom-3 right-3 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                                    {{ post.duration }}
+                                </div>
+                                <div class="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white" :class="getPostTypeColors(post.type.color)">
+                                    {{ post.type.label.toUpperCase() }}
+                                </div>
+                            </div>
+
+                            <div class="p-4 sm:p-6">
+                                <!-- Source Header -->
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-9 h-9 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center">
+                                            <span v-if="post.author.name" class="text-white font-semibold text-sm">
+                                                {{ post.author.name.charAt(0).toUpperCase() }}
+                                            </span>
+                                            <img v-else-if="post.author.avatar" :src="post.author.avatar" :alt="post.author.name" class="w-9 h-9 rounded-full">
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-gray-900">{{ post.author.name || 'Anonymous' }}</div>
+                                            <div class="text-gray-500 text-sm">{{ post.published_at }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Action Buttons for Guests (Show register prompt) -->
+                                    <div class="flex items-center space-x-1">
+                                        <!-- Bookmark Button -->
+                                        <button 
+                                            @click="showGuestPrompt"
+                                            class="p-3 text-gray-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
+                                            title="Sign up to save posts"
+                                        >
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                            </svg>
+                                        </button>
+                                        
+                                        <!-- Mark as Seen Button -->
+                                        <button 
+                                            @click="showGuestPrompt"
+                                            class="p-3 text-gray-400 hover:text-green-600 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
+                                            title="Sign up to track reading progress"
+                                        >
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Content -->
+                                <Link :href="route('posts.show', post.slug)">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors">
+                                        {{ post.title }}
+                                    </h3>
+                                </Link>
+                                
+                                <p v-if="post.excerpt" class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
+                                    {{ post.excerpt }}
+                                </p>
+
+                                <!-- Podcast Player (if podcast) -->
+                                <div v-if="post.type.value === 'podcast'" class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-3 mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <button class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center shadow-sm">
+                                            <svg class="w-4 h-4 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z"/>
+                                            </svg>
+                                        </button>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                                <span>0:00</span>
+                                                <span>{{ post.duration || '0:00' }}</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-1">
+                                                <div class="bg-indigo-600 h-1 rounded-full" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tags -->
+                                <div v-if="post.tags && post.tags.length" class="flex items-center flex-wrap gap-2 mb-6">
+                                    <span v-for="tag in post.tags.slice(0, 3)" :key="tag" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                                        {{ tag }}
+                                    </span>
+                                    <span v-if="post.duration" class="text-gray-500 text-sm ml-auto">{{ post.duration }}</span>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <div class="flex items-center space-x-6 text-sm text-gray-500">
+                                        <!-- Like Button -->
+                                        <button 
+                                            @click="showGuestPrompt"
+                                            class="flex items-center space-x-2 hover:text-red-500 transition-colors"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                            </svg>
+                                            <span>{{ post.likes_count }}</span>
+                                        </button>
+                                        
+                                        <!-- Bookmark Button -->
+                                        <button 
+                                            @click="showGuestPrompt"
+                                            class="flex items-center space-x-2 hover:text-blue-500 transition-colors"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                     <Link :href="route('posts.show', post.slug)" class="text-red-600 hover:text-red-700 font-medium">
+                                        {{ getPostAction(post) }}
+                                    </Link>
+                                </div>
+                            </div>
+                        </article>
+                        </div>
+                    </InfiniteScroll>
                 </div>
             </div>
         </div>
+
+        <!-- Guest Prompt Modal -->
+        <Modal :show="showGuestModal" @close="closeGuestModal" maxWidth="md">
+            <div class="p-6 sm:p-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Join LaravelSense</h2>
+                    <p class="text-gray-600 mb-6">Sign up to unlock all features like saving posts, tracking your reading progress, and personalizing your feed.</p>
+                    
+                    <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">What you'll get:</h3>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-green-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Save and bookmark your favorite posts
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-green-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Track your reading progress
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-green-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Add your own content sources
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-green-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Personalized content feed
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                        <Link :href="route('register')" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all text-center">
+                            Create Free Account
+                        </Link>
+                        <Link :href="route('login')" class="flex-1 bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-center">
+                            Sign In
+                        </Link>
+                    </div>
+                    
+                    <button @click="closeGuestModal" class="mt-4 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                        Continue browsing
+                    </button>
+                </div>
+            </div>
+        </Modal>
 
         <!-- Add Source Modal -->
         <Modal :show="showAddSourceModal" @close="closeAddSourceModal" maxWidth="lg">

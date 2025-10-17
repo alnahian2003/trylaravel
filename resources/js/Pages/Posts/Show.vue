@@ -3,6 +3,7 @@ import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useToast } from '@/composables/useToast';
 import ToastContainer from '@/Components/ToastContainer.vue';
+import Modal from '@/Components/Modal.vue';
 
 const { success, error, handleApiError } = useToast();
 
@@ -30,6 +31,17 @@ const isMarkingSeen = ref(false);
 const showShareModal = ref(false);
 const showReportModal = ref(false);
 const isReporting = ref(false);
+
+// Guest Prompt Modal
+const showGuestModal = ref(false);
+
+const showGuestPrompt = () => {
+    showGuestModal.value = true;
+};
+
+const closeGuestModal = () => {
+    showGuestModal.value = false;
+};
 
 const currentUrl = computed(() => window.location.href);
 
@@ -69,7 +81,12 @@ const toggleContextPanel = () => {
 
 // User interaction functions
 const toggleLike = async () => {
-    if (!isAuthenticated.value || isLiking.value) return;
+    if (!isAuthenticated.value) {
+        showGuestPrompt();
+        return;
+    }
+    
+    if (isLiking.value) return;
     
     isLiking.value = true;
     
@@ -102,7 +119,12 @@ const toggleLike = async () => {
 };
 
 const toggleBookmark = async () => {
-    if (!isAuthenticated.value || isBookmarking.value) return;
+    if (!isAuthenticated.value) {
+        showGuestPrompt();
+        return;
+    }
+    
+    if (isBookmarking.value) return;
     
     isBookmarking.value = true;
     
@@ -134,7 +156,12 @@ const toggleBookmark = async () => {
 };
 
 const markAsSeen = async () => {
-    if (!isAuthenticated.value || isMarkingSeen.value || isSeen.value) return;
+    if (!isAuthenticated.value) {
+        showGuestPrompt();
+        return;
+    }
+    
+    if (isMarkingSeen.value || isSeen.value) return;
     
     isMarkingSeen.value = true;
     
@@ -166,7 +193,12 @@ const markAsSeen = async () => {
 };
 
 const markAsUnseen = async () => {
-    if (!isAuthenticated.value || isMarkingSeen.value || !isSeen.value) return;
+    if (!isAuthenticated.value) {
+        showGuestPrompt();
+        return;
+    }
+    
+    if (isMarkingSeen.value || !isSeen.value) return;
     
     isMarkingSeen.value = true;
     
@@ -266,6 +298,10 @@ const copyToClipboard = async () => {
 };
 
 const openReportModal = () => {
+    if (!isAuthenticated.value) {
+        showGuestPrompt();
+        return;
+    }
     showReportModal.value = true;
 };
 
@@ -377,23 +413,23 @@ onUnmounted(() => {
                         <!-- Primary Actions -->
                         <div class="flex items-center space-x-1">
                             <!-- Bookmark Button -->
-                            <button v-if="isAuthenticated" @click="toggleBookmark" :disabled="isBookmarking" :class="[
+                            <button @click="toggleBookmark" :disabled="isBookmarking" :class="[
                                 'p-2 sm:px-3 sm:py-2 rounded-xl transition-colors font-medium flex items-center space-x-1',
-                                isBookmarked ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                                isAuthenticated && isBookmarked ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
                             ]">
-                                <svg class="w-5 h-5" :fill="isBookmarked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5" :fill="isAuthenticated && isBookmarked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                                 </svg>
-                                <span class="hidden sm:inline">{{ isBookmarked ? 'Saved' : 'Save' }}</span>
+                                <span class="hidden sm:inline">{{ isAuthenticated && isBookmarked ? 'Saved' : 'Save' }}</span>
                             </button>
                             
                             <!-- Mark as Seen Button -->
                             <button 
-                                v-if="isAuthenticated && !isSeen" 
+                                v-if="!isAuthenticated || (isAuthenticated && !isSeen)" 
                                 @click="markAsSeen" 
                                 :disabled="isMarkingSeen" 
                                 class="p-2 sm:px-3 sm:py-2 rounded-xl transition-colors font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 flex items-center space-x-1"
-                                title="Mark as seen"
+                                :title="isAuthenticated ? 'Mark as seen' : 'Sign up to track reading progress'"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -520,27 +556,27 @@ onUnmounted(() => {
                 <footer class="mt-8 sm:mt-12 lg:mt-16 pt-6 sm:pt-8 border-t border-gray-200">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                            <button v-if="isAuthenticated" @click="toggleLike" :disabled="isLiking" :class="[
+                            <button @click="toggleLike" :disabled="isLiking" :class="[
                                 'flex items-center space-x-2 sm:space-x-3 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-colors',
-                                isLiked ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                                isAuthenticated && isLiked ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
                             ]">
-                                <svg class="w-4 h-4 sm:w-5 sm:h-5" :fill="isLiked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" :fill="isAuthenticated && isLiked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                 </svg>
                                 <span class="font-semibold text-sm sm:text-base">{{ likesCount }}</span>
                             </button>
-                            <button v-if="isAuthenticated" @click="toggleBookmark" :disabled="isBookmarking" :class="[
+                            <button @click="toggleBookmark" :disabled="isBookmarking" :class="[
                                 'px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-colors font-semibold text-sm sm:text-base',
-                                isBookmarked ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                                isAuthenticated && isBookmarked ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
                             ]">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 inline" :fill="isBookmarked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 inline" :fill="isAuthenticated && isBookmarked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                                 </svg>
-                                <span class="hidden sm:inline">{{ isBookmarked ? 'Saved' : 'Save for Later' }}</span>
-                                <span class="sm:hidden">{{ isBookmarked ? 'Saved' : 'Save' }}</span>
+                                <span class="hidden sm:inline">{{ isAuthenticated && isBookmarked ? 'Saved' : 'Save for Later' }}</span>
+                                <span class="sm:hidden">{{ isAuthenticated && isBookmarked ? 'Saved' : 'Save' }}</span>
                             </button>
                         </div>
-                        <button v-if="isAuthenticated" @click="openReportModal" class="text-gray-600 hover:text-gray-900 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors font-semibold text-sm sm:text-base">
+                        <button @click="openReportModal" class="text-gray-600 hover:text-gray-900 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors font-semibold text-sm sm:text-base">
                             <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
                             </svg>
@@ -822,6 +858,61 @@ onUnmounted(() => {
             </div>
         </div>
     </div>
+
+    <!-- Guest Prompt Modal -->
+    <Modal :show="showGuestModal" @close="closeGuestModal" maxWidth="md">
+        <div class="p-6 sm:p-8">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Join LaravelSense</h2>
+                <p class="text-gray-600 mb-6">Sign up to unlock all features like saving posts, tracking your reading progress, and personalizing your feed.</p>
+                
+                <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                    <h3 class="font-semibold text-gray-900 mb-3">What you'll get:</h3>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-green-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Save and bookmark your favorite posts
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-green-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Track your reading progress
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-green-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Add your own content sources
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-green-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Personalized content feed
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    <Link :href="route('register')" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all text-center">
+                        Create Free Account
+                    </Link>
+                    <Link :href="route('login')" class="flex-1 bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-center">
+                        Sign In
+                    </Link>
+                </div>
+            </div>
+        </div>
+    </Modal>
 
     <!-- Toast Container -->
     <ToastContainer />
