@@ -7,6 +7,7 @@ use App\Enums\PostType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
 class Post extends Model
@@ -57,8 +58,8 @@ class Post extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', PostStatus::PUBLISHED)
-                    ->whereNotNull('published_at')
-                    ->where('published_at', '<=', now());
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function scopeOfType(Builder $query, PostType $type): Builder
@@ -94,7 +95,7 @@ class Post extends Model
     // Accessors
     public function getFormattedDurationAttribute(): ?string
     {
-        if (!$this->duration) {
+        if (! $this->duration) {
             return null;
         }
 
@@ -111,7 +112,7 @@ class Post extends Model
 
     public function getFormattedFileSizeAttribute(): ?string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return null;
         }
 
@@ -124,7 +125,7 @@ class Post extends Model
             $unit++;
         }
 
-        return round($size, 2) . ' ' . $units[$unit];
+        return round($size, 2).' '.$units[$unit];
     }
 
     public function getIsPublishedAttribute(): bool
@@ -143,7 +144,7 @@ class Post extends Model
     public function setTitleAttribute(string $value): void
     {
         $this->attributes['title'] = $value;
-        
+
         if (empty($this->attributes['slug'])) {
             $this->attributes['slug'] = Str::slug($value);
         }
@@ -177,7 +178,7 @@ class Post extends Model
 
     public function hasFile(): bool
     {
-        return !empty($this->file_url);
+        return ! empty($this->file_url);
     }
 
     public function publish(): void
@@ -240,5 +241,71 @@ class Post extends Model
     public function getDefaultMeta(): array
     {
         return $this->type->defaultMeta();
+    }
+
+    // Relationships
+    public function likes(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'post_likes')
+            ->withTimestamps();
+    }
+
+    public function bookmarks(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'post_bookmarks')
+            ->withTimestamps();
+    }
+
+    // User interaction helper methods
+    public function isLikedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->likes()->where('user_id', $user->id)->exists();
+    }
+
+    public function isBookmarkedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->bookmarks()->where('user_id', $user->id)->exists();
+    }
+
+    public function toggleLike(User $user): bool
+    {
+        return match ($this->isLikedBy($user)) {
+            true => (function () use ($user) {
+                $this->likes()->detach($user->id);
+                $this->decrement('likes_count');
+
+                return false;
+            })(),
+            false => (function () use ($user) {
+                $this->likes()->attach($user->id);
+                $this->increment('likes_count');
+
+                return true;
+            })(),
+        };
+    }
+
+    public function toggleBookmark(User $user): bool
+    {
+        return match ($this->isBookmarkedBy($user)) {
+            true => (function () use ($user) {
+                $this->bookmarks()->detach($user->id);
+
+                return false;
+            })(),
+            false => (function () use ($user) {
+                $this->bookmarks()->attach($user->id);
+
+                return true;
+            })(),
+        };
     }
 }
