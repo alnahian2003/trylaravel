@@ -328,116 +328,131 @@ onUnmounted(() => {
         <nav class="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center space-x-6">
-                        <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">
-                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- Left Navigation -->
+                    <div class="flex items-center space-x-2 sm:space-x-6">
+                        <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 transition-colors font-medium flex items-center">
+                            <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                             </svg>
-                            Back to Feed
+                            <span class="hidden sm:inline">Back to Feed</span>
+                            <span class="sm:hidden">Back</span>
                         </Link>
-                        <div class="text-gray-300">|</div>
-                        <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Explore</Link>
-                        <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Library</Link>
-                        <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Sources</Link>
+                        <div class="hidden md:flex items-center space-x-6">
+                            <div class="text-gray-300">|</div>
+                            <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Explore</Link>
+                            <Link :href="route('library')" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Library</Link>
+                            <Link :href="route('sources.index')" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Sources</Link>
+                        </div>
                     </div>
 
-                    <div class="flex items-center space-x-2">
-                        <Link v-if="navigation?.previous" :href="route('posts.show', navigation.previous.slug)" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors" :title="`Previous: ${navigation.previous.title} (K)`">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                        </Link>
-                        <button v-else class="text-gray-300 px-3 py-2 rounded-xl cursor-not-allowed" title="Previous (K)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                        </button>
+                    <!-- Action Buttons -->
+                    <div class="flex items-center space-x-1 sm:space-x-2">
+                        <!-- Navigation Arrows -->
+                        <div class="hidden sm:flex items-center space-x-1">
+                            <Link v-if="navigation?.previous" :href="route('posts.show', navigation.previous.slug)" class="text-gray-600 hover:text-gray-900 p-2 rounded-xl hover:bg-gray-100 transition-colors" :title="`Previous: ${navigation.previous.title} (K)`">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                            </Link>
+                            <button v-else class="text-gray-300 p-2 rounded-xl cursor-not-allowed" title="Previous (K)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                            </button>
+                            
+                            <Link v-if="navigation?.next" :href="route('posts.show', navigation.next.slug)" class="text-gray-600 hover:text-gray-900 p-2 rounded-xl hover:bg-gray-100 transition-colors" :title="`Next: ${navigation.next.title} (J)`">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </Link>
+                            <button v-else class="text-gray-300 p-2 rounded-xl cursor-not-allowed" title="Next (J)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                            
+                            <div class="w-px h-6 bg-gray-300 mx-2"></div>
+                        </div>
                         
-                        <Link v-if="navigation?.next" :href="route('posts.show', navigation.next.slug)" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors" :title="`Next: ${navigation.next.title} (J)`">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </Link>
-                        <button v-else class="text-gray-300 px-3 py-2 rounded-xl cursor-not-allowed" title="Next (J)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </button>
-                        
-                        <div class="w-px h-6 bg-gray-300 mx-2"></div>
-                        
-                        <button v-if="isAuthenticated" @click="toggleBookmark" :disabled="isBookmarking" :class="[
-                            'px-4 py-2 rounded-xl transition-colors font-medium',
-                            isBookmarked ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                        ]">
-                            <svg class="w-4 h-4 mr-2 inline" :fill="isBookmarked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-                            </svg>
-                            {{ isBookmarked ? 'Saved' : 'Save' }}
-                        </button>
-                        
-                        <!-- Mark as Seen Button -->
-                        <button 
-                            v-if="isAuthenticated && !isSeen" 
-                            @click="markAsSeen" 
-                            :disabled="isMarkingSeen" 
-                            class="px-4 py-2 rounded-xl transition-colors font-medium text-gray-600 hover:text-green-600 hover:bg-green-50"
-                            title="Mark as seen"
-                        >
-                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Mark as Seen
-                        </button>
-                        
-                        <!-- Mark as Unseen Button -->
-                        <button 
-                            v-if="isAuthenticated && isSeen" 
-                            @click="markAsUnseen" 
-                            :disabled="isMarkingSeen" 
-                            class="px-4 py-2 rounded-xl transition-colors font-medium bg-green-50 text-green-600 hover:text-gray-600 hover:bg-gray-50"
-                            title="Mark as unseen"
-                        >
-                            <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                            </svg>
-                            Seen
-                        </button>
-                        <button @click="sharePost" class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors font-medium">
-                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
-                            </svg>
-                            Share
-                        </button>
-                        <button @click="toggleContextPanel" class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors font-medium lg:hidden">
-                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Context
-                        </button>
+                        <!-- Primary Actions -->
+                        <div class="flex items-center space-x-1">
+                            <!-- Bookmark Button -->
+                            <button v-if="isAuthenticated" @click="toggleBookmark" :disabled="isBookmarking" :class="[
+                                'p-2 sm:px-3 sm:py-2 rounded-xl transition-colors font-medium flex items-center space-x-1',
+                                isBookmarked ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                            ]">
+                                <svg class="w-5 h-5" :fill="isBookmarked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                </svg>
+                                <span class="hidden sm:inline">{{ isBookmarked ? 'Saved' : 'Save' }}</span>
+                            </button>
+                            
+                            <!-- Mark as Seen Button -->
+                            <button 
+                                v-if="isAuthenticated && !isSeen" 
+                                @click="markAsSeen" 
+                                :disabled="isMarkingSeen" 
+                                class="p-2 sm:px-3 sm:py-2 rounded-xl transition-colors font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 flex items-center space-x-1"
+                                title="Mark as seen"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="hidden sm:inline">Mark as Seen</span>
+                            </button>
+                            
+                            <!-- Mark as Unseen Button -->
+                            <button 
+                                v-if="isAuthenticated && isSeen" 
+                                @click="markAsUnseen" 
+                                :disabled="isMarkingSeen" 
+                                class="p-2 sm:px-3 sm:py-2 rounded-xl transition-colors font-medium bg-green-50 text-green-600 hover:text-gray-600 hover:bg-gray-50 flex items-center space-x-1"
+                                title="Mark as unseen"
+                            >
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                                <span class="hidden sm:inline">Seen</span>
+                            </button>
+                            
+                            <!-- Share Button -->
+                            <button @click="sharePost" class="p-2 sm:px-3 sm:py-2 text-gray-600 hover:text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-medium flex items-center space-x-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+                                </svg>
+                                <span class="hidden lg:inline">Share</span>
+                            </button>
+                            
+                            <!-- Context Panel Toggle (Mobile Only) -->
+                            <button @click="toggleContextPanel" class="p-2 text-gray-600 hover:text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-medium lg:hidden">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </nav>
 
         <!-- Main Layout -->
-        <div class="flex">
+        <div class="flex flex-col lg:flex-row">
             <!-- Article Content -->
-            <main class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <main class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
                 <!-- Article Header -->
-                <header class="mb-12">
-                    <div class="flex items-center space-x-3 mb-6">
-                        <span class="text-sm px-4 py-1.5 rounded-full font-semibold" :class="getPostTypeColors(post.type.color)">
+                <header class="mb-8 sm:mb-12">
+                    <div class="flex flex-wrap items-center gap-3 mb-4 sm:mb-6">
+                        <span class="text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-full font-semibold" :class="getPostTypeColors(post.type.color)">
                             <i :class="getPostTypeIcon(post.type.value)" class="mr-1"></i>
                             {{ post.type.label.toUpperCase() }}
                         </span>
-                        <span class="text-gray-500">•</span>
-                        <span class="text-gray-600 font-medium">{{ getReadingTime() }}</span>
-                        <span v-if="post.duration" class="text-gray-500">•</span>
-                        <span v-if="post.duration" class="text-gray-600 font-medium">{{ post.duration }}</span>
+                        <span class="text-gray-500 hidden sm:inline">•</span>
+                        <span class="text-gray-600 font-medium text-sm">{{ getReadingTime() }}</span>
+                        <span v-if="post.duration" class="text-gray-500 hidden sm:inline">•</span>
+                        <span v-if="post.duration" class="text-gray-600 font-medium text-sm">{{ post.duration }}</span>
                     </div>
 
-                    <h1 class="text-5xl font-bold text-gray-900 mb-8 leading-tight">
+                    <h1 class="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
                         {{ post.title }}
                     </h1>
 
@@ -533,9 +548,9 @@ onUnmounted(() => {
                     </div>
 
                     <!-- Related Posts -->
-                    <div v-if="relatedPosts && relatedPosts.length" class="bg-gray-50 rounded-2xl p-8">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Read Next</h3>
-                        <div class="grid md:grid-cols-2 gap-6">
+                    <div v-if="relatedPosts && relatedPosts.length" class="bg-gray-50 rounded-2xl p-4 sm:p-6 lg:p-8">
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Read Next</h3>
+                        <div class="grid gap-4 sm:gap-6 md:grid-cols-2">
                             <Link v-for="relatedPost in relatedPosts.slice(0, 2)" :key="relatedPost.id" :href="route('posts.show', relatedPost.slug)" class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
                                 <span class="text-sm px-3 py-1.5 rounded-full font-semibold" :class="getPostTypeColors(relatedPost.type.color)">
                                     {{ relatedPost.type.label.toUpperCase() }}
@@ -549,8 +564,17 @@ onUnmounted(() => {
             </main>
 
             <!-- Context Panel (Right Sidebar) -->
-            <aside :class="['w-96 bg-gray-50 border-l border-gray-200 sticky top-16 h-screen overflow-y-auto', contextPanelVisible ? 'block' : 'hidden lg:block']">
-                <div class="p-8 space-y-8">
+            <aside :class="[
+                'lg:w-96 bg-gray-50 border-l border-gray-200 lg:sticky lg:top-16 lg:h-screen lg:overflow-y-auto',
+                'lg:block',
+                contextPanelVisible ? 'fixed inset-0 z-50 lg:relative lg:inset-auto' : 'hidden'
+            ]">
+                <!-- Mobile Overlay -->
+                <div v-if="contextPanelVisible" @click="toggleContextPanel" class="fixed inset-0 bg-black bg-opacity-50 lg:hidden"></div>
+                
+                <!-- Panel Content -->
+                <div class="relative lg:static h-full lg:h-auto bg-gray-50 lg:bg-transparent w-full max-w-sm lg:max-w-none ml-auto lg:ml-0 lg:w-96">
+                    <div class="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 h-full overflow-y-auto">
                     <!-- Context Header -->
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl font-bold text-gray-900">
@@ -645,6 +669,7 @@ onUnmounted(() => {
                                 </svg>
                             </a>
                         </div>
+                    </div>
                     </div>
                 </div>
             </aside>

@@ -191,12 +191,13 @@ const getPostTypeColors = (type) => {
                                 <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
                         </div>
-                        <span class="text-xl font-bold text-gray-900">LaravelSense</span>
+                        <span class="text-xl font-bold text-gray-900 hidden sm:inline">LaravelSense</span>
+                        <span class="text-lg font-bold text-gray-900 sm:hidden">LS</span>
                     </div>
 
-                    <!-- Search Bar -->
-                    <div class="flex-1 max-w-xl mx-8">
-                        <div class="relative">
+                    <!-- Search Bar - Hidden on mobile, shown on tablet+ -->
+                    <div class="hidden md:flex flex-1 max-w-xl mx-8">
+                        <div class="relative w-full">
                             <input 
                                 type="search" 
                                 placeholder="Search Laravel content..." 
@@ -208,18 +209,32 @@ const getPostTypeColors = (type) => {
                         </div>
                     </div>
 
+                    <!-- Mobile Search Button -->
+                    <button class="md:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+
                     <!-- Right Side - Auth/Non-Auth -->
-                    <div v-if="isAuthenticated" class="flex items-center space-x-4">
-                        <!-- Authenticated User Menu -->
-                        <div class="flex items-center space-x-3">
+                    <div v-if="isAuthenticated" class="flex items-center space-x-2">
+                        <!-- Mobile Menu Button -->
+                        <button class="md:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Desktop User Menu -->
+                        <div class="hidden md:flex items-center space-x-3">
                             <div class="relative group">
-                                <button class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center cursor-pointer">
+                                <button class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 transition-transform">
                                     <span class="text-white font-semibold text-sm">{{ user.name.charAt(0).toUpperCase() }}</span>
                                 </button>
                                 <!-- Dropdown -->
                                 <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                                     <div class="py-2">
-                                        <Link :href="route('profile.edit')" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 text-sm">
+                                        <Link :href="route('profile.edit')" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 text-sm">
                                             <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -227,7 +242,7 @@ const getPostTypeColors = (type) => {
                                             Settings
                                         </Link>
                                         <div class="border-t border-gray-200 my-2"></div>
-                                        <Link :href="route('logout')" method="post" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 text-sm w-full text-left">
+                                        <Link :href="route('logout')" method="post" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 text-sm w-full text-left">
                                             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                             </svg>
@@ -237,13 +252,21 @@ const getPostTypeColors = (type) => {
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Mobile User Avatar -->
+                        <div class="md:hidden">
+                            <button class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center cursor-pointer">
+                                <span class="text-white font-semibold text-sm">{{ user.name.charAt(0).toUpperCase() }}</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Non-Auth Navigation -->
-                    <div v-else class="flex items-center space-x-4">
-                        <Link :href="route('login')" class="text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm">Login</Link>
-                        <Link :href="route('register')" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2.5 rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all text-sm">
-                            Join Now
+                    <div v-else class="flex items-center space-x-2">
+                        <Link :href="route('login')" class="text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm px-3 py-2 rounded-lg hover:bg-gray-100">Login</Link>
+                        <Link :href="route('register')" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2.5 rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all text-sm">
+                            <span class="hidden sm:inline">Join Now</span>
+                            <span class="sm:hidden">Join</span>
                         </Link>
                     </div>
                 </div>
@@ -251,13 +274,43 @@ const getPostTypeColors = (type) => {
         </header>
 
         <!-- Main Content -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             
             <!-- Authenticated User Layout -->
-            <div v-if="isAuthenticated" class="grid lg:grid-cols-4 gap-12">
+            <div v-if="isAuthenticated" class="flex flex-col lg:grid lg:grid-cols-4 gap-6 lg:gap-12">
                 
-                <!-- Left Sidebar -->
-                <div class="lg:col-span-1">
+                <!-- Mobile Quick Actions Bar -->
+                <div class="lg:hidden bg-white rounded-xl border border-gray-200 p-4 mb-4">
+                    <div class="flex items-center justify-between space-x-3 overflow-x-auto">
+                        <button @click="openAddSourceModal" class="flex-shrink-0 bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            <span class="hidden sm:inline">Add Source</span>
+                        </button>
+                        <Link :href="route('library')" class="flex-shrink-0 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                            </svg>
+                            <span class="hidden sm:inline">Library</span>
+                        </Link>
+                        <Link :href="route('liked-posts')" class="flex-shrink-0 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                            <span class="hidden sm:inline">Liked</span>
+                        </Link>
+                        <Link :href="route('sources.index')" class="flex-shrink-0 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                            <span class="hidden sm:inline">Sources</span>
+                        </Link>
+                    </div>
+                </div>
+                
+                <!-- Left Sidebar - Hidden on mobile, shown on desktop -->
+                <div class="hidden lg:block lg:col-span-1">
                     <div class="sticky top-24 space-y-6">
                         
                         <!-- Quick Actions -->
@@ -346,9 +399,9 @@ const getPostTypeColors = (type) => {
                 </div>
 
                 <!-- Main Feed -->
-                <div class="lg:col-span-3">
+                <div class="w-full lg:col-span-3">
                     <InfiniteScroll data="posts" :buffer="500">
-                        <div class="grid md:grid-cols-2 gap-8">
+                        <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:gap-8">
                             <article v-for="post in posts.data" :key="post.id" class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200">
                             <!-- Video Thumbnail (if video) -->
                             <div v-if="post.type.value === 'video'" class="relative rounded-t-2xl overflow-hidden">
@@ -368,7 +421,7 @@ const getPostTypeColors = (type) => {
                                 </div>
                             </div>
 
-                            <div class="p-6">
+                            <div class="p-4 sm:p-6">
                                 <!-- Source Header -->
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center space-x-3">
@@ -385,15 +438,15 @@ const getPostTypeColors = (type) => {
                                     </div>
                                     
                                     <!-- Action Buttons -->
-                                    <div v-if="isAuthenticated" class="flex items-center space-x-2">
+                                    <div v-if="isAuthenticated" class="flex items-center space-x-1">
                                         <!-- Bookmark Button -->
                                         <button 
                                             @click="toggleBookmark(post)"
                                             :class="post.is_bookmarked ? 'text-blue-600' : 'text-gray-400 hover:text-blue-600'"
-                                            class="p-2 transition-colors"
+                                            class="p-3 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
                                             title="Save for later"
                                         >
-                                            <svg class="w-4 h-4" :fill="post.is_bookmarked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" :fill="post.is_bookmarked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                                             </svg>
                                         </button>
@@ -402,10 +455,10 @@ const getPostTypeColors = (type) => {
                                         <button 
                                             v-if="!post.is_seen"
                                             @click="markAsSeen(post)"
-                                            class="p-2 text-gray-400 hover:text-green-600 transition-colors"
+                                            class="p-3 text-gray-400 hover:text-green-600 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
                                             title="Mark as seen"
                                         >
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                         </button>
@@ -414,10 +467,10 @@ const getPostTypeColors = (type) => {
                                         <button 
                                             v-if="post.is_seen"
                                             @click="markAsUnseen(post)"
-                                            class="p-2 text-green-600 hover:text-gray-400 transition-colors"
+                                            class="p-3 text-green-600 hover:text-gray-400 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
                                             title="Mark as unseen"
                                         >
-                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                                             </svg>
                                         </button>
