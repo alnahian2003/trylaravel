@@ -1,12 +1,14 @@
 <script setup>
 import { Head, Link, usePage, InfiniteScroll, useForm } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
+import { useToast } from '@/composables/useToast';
+import ToastContainer from '@/Components/ToastContainer.vue';
 
 const props = defineProps({
     posts: Object,
@@ -17,6 +19,18 @@ const props = defineProps({
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const isAuthenticated = computed(() => !!user.value);
+
+const { success, error } = useToast();
+
+// Watch for flash messages and show toasts
+watch(() => page.props.flash, (flash) => {
+    if (flash?.success) {
+        success(flash.success);
+    }
+    if (flash?.error) {
+        error(flash.error);
+    }
+}, { immediate: true });
 
 // Add Source Modal
 const showAddSourceModal = ref(false);
@@ -38,7 +52,11 @@ const submitAddSource = () => {
     addSourceForm.post(route('sources.store'), {
         onSuccess: () => {
             closeAddSourceModal();
+            success('Source added successfully!');
         },
+        onError: () => {
+            error('Failed to add source. Please try again.');
+        }
     });
 };
 
@@ -478,6 +496,9 @@ const getPostTypeColors = (type) => {
                 </form>
             </div>
         </Modal>
+
+        <!-- Toast Container -->
+        <ToastContainer />
     </div>
 </template>
 

@@ -49,6 +49,16 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Library
                                 </NavLink>
+                                <NavLink
+                                    :href="route('sources.index')"
+                                    :active="route().current('sources.index')"
+                                    class="flex items-center"
+                                >
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M3.429 14.286a1.71 1.71 0 011.715 1.714A1.71 1.71 0 013.43 17.714a1.71 1.71 0 01-1.715-1.714c0-.95.765-1.714 1.714-1.714zM3.429 9.143c1.903 0 3.652.753 4.967 2.125a1.714 1.714 0 01-2.446 2.398 3.43 3.43 0 00-2.521-1.095c-.947 0-1.715.767-1.715 1.715a1.714 1.714 0 01-3.428 0 5.14 5.14 0 015.143-5.143zM3.429 4c3.046 0 5.857 1.214 7.875 3.429a1.714 1.714 0 01-2.446 2.398A6.858 6.858 0 003.43 7.429c-1.894 0-3.429 1.535-3.429 3.428a1.714 1.714 0 01-3.428 0C-3.428 6.29.858 4 3.429 4z"/>
+                                    </svg>
+                                    Sources
+                                </NavLink>
                             </div>
                         </div>
 
@@ -161,6 +171,16 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('library')"
                         >
                             Library
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('sources.index')"
+                            :active="route().current('sources.index')"
+                            class="flex items-center"
+                        >
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3.429 14.286a1.71 1.71 0 011.715 1.714A1.71 1.71 0 013.43 17.714a1.71 1.71 0 01-1.715-1.714c0-.95.765-1.714 1.714-1.714zM3.429 9.143c1.903 0 3.652.753 4.967 2.125a1.714 1.714 0 01-2.446 2.398 3.43 3.43 0 00-2.521-1.095c-.947 0-1.715.767-1.715 1.715a1.714 1.714 0 01-3.428 0 5.14 5.14 0 015.143-5.143zM3.429 4c3.046 0 5.857 1.214 7.875 3.429a1.714 1.714 0 01-2.446 2.398A6.858 6.858 0 003.43 7.429c-1.894 0-3.429 1.535-3.429 3.428a1.714 1.714 0 01-3.428 0C-3.428 6.29.858 4 3.429 4z"/>
+                            </svg>
+                            Sources
                         </ResponsiveNavLink>
                     </div>
 
