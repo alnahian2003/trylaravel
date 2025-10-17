@@ -18,9 +18,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Post interactions
-    Route::post('/posts/{post}/like', [HomeController::class, 'toggleLike'])->name('posts.like');
-    Route::post('/posts/{post}/bookmark', [HomeController::class, 'toggleBookmark'])->name('posts.bookmark');
-    Route::post('/posts/{post}/report', [HomeController::class, 'reportPost'])->name('posts.report');
+    Route::post('/posts/{post:slug}/like', [HomeController::class, 'toggleLike'])->name('posts.like');
+    Route::post('/posts/{post:slug}/bookmark', [HomeController::class, 'toggleBookmark'])->name('posts.bookmark');
+    Route::post('/posts/{post:slug}/report', [HomeController::class, 'reportPost'])->name('posts.report');
 });
 
 require __DIR__.'/auth.php';
