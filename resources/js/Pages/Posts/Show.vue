@@ -1,6 +1,10 @@
 <script setup>
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { useToast } from '@/composables/useToast';
+import ToastContainer from '@/Components/ToastContainer.vue';
+
+const { success, error, handleApiError } = useToast();
 
 const props = defineProps({
     post: Object,
@@ -77,12 +81,19 @@ const toggleLike = async () => {
             },
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         isLiked.value = data.is_liked;
         likesCount.value = data.likes_count;
-    } catch (error) {
-        console.error('Error toggling like:', error);
+        
+        success(data.is_liked ? 'Post liked!' : 'Like removed');
+    } catch (err) {
+        console.error('Error toggling like:', err);
+        handleApiError(err, 'Failed to update like status');
     } finally {
         isLiking.value = false;
     }
@@ -103,11 +114,18 @@ const toggleBookmark = async () => {
             },
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         isBookmarked.value = data.is_bookmarked;
-    } catch (error) {
-        console.error('Error toggling bookmark:', error);
+        
+        success(data.is_bookmarked ? 'Post saved to your library!' : 'Post removed from library');
+    } catch (err) {
+        console.error('Error toggling bookmark:', err);
+        handleApiError(err, 'Failed to update bookmark status');
     } finally {
         isBookmarking.value = false;
     }
@@ -151,6 +169,7 @@ const shareToSocial = (platform) => {
     
     if (shareUrl) {
         window.open(shareUrl, '_blank', 'width=600,height=400');
+        success(`Shared to ${platform.charAt(0).toUpperCase() + platform.slice(1)}!`);
         closeShareModal();
     }
 };
@@ -160,7 +179,7 @@ const copyToClipboard = async () => {
     
     try {
         await navigator.clipboard.writeText(url);
-        alert('Link copied to clipboard!');
+        success('Link copied to clipboard!');
         closeShareModal();
     } catch (error) {
         // Fallback for older browsers
@@ -171,10 +190,10 @@ const copyToClipboard = async () => {
         textArea.select();
         try {
             document.execCommand('copy');
-            alert('Link copied to clipboard!');
+            success('Link copied to clipboard!');
             closeShareModal();
         } catch (err) {
-            alert('Could not copy link. Please copy manually: ' + url);
+            error('Could not copy link');
         }
         document.body.removeChild(textArea);
     }
@@ -204,15 +223,23 @@ const submitReport = async (reportData) => {
             body: JSON.stringify(reportData)
         });
         
+        const data = await response.json();
+        
         if (response.ok) {
-            alert('Report submitted successfully. Thank you for helping us improve the platform.');
+            success('Report submitted successfully. Thank you for helping us improve the platform.');
             closeReportModal();
         } else {
-            alert('Failed to submit report. Please try again.');
+            // Handle validation errors or other API errors
+            if (data.errors) {
+                const firstError = Object.values(data.errors)[0][0];
+                error(firstError);
+            } else {
+                error(data.message || 'Failed to submit report. Please try again.');
+            }
         }
-    } catch (error) {
-        console.error('Error submitting report:', error);
-        alert('Failed to submit report. Please try again.');
+    } catch (err) {
+        console.error('Error submitting report:', err);
+        handleApiError(err, 'Failed to submit report');
     } finally {
         isReporting.value = false;
     }
@@ -684,6 +711,9 @@ onUnmounted(() => {
             </div>
         </div>
     </div>
+
+    <!-- Toast Container -->
+    <ToastContainer />
 </template>
 
 <style scoped>
