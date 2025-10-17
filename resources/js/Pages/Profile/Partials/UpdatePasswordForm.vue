@@ -5,6 +5,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { useToast } from '@/composables/useToast';
+
+const { success, handleFormErrors } = useToast();
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -18,8 +21,12 @@ const form = useForm({
 const updatePassword = () => {
     form.put(route('password.update'), {
         preserveScroll: true,
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+            form.reset();
+            success('Password updated successfully!');
+        },
         onError: () => {
+            handleFormErrors(form.errors);
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
                 passwordInput.value.focus();

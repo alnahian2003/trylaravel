@@ -5,6 +5,9 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { useToast } from '@/composables/useToast';
+
+const { success, handleFormErrors } = useToast();
 
 defineProps({
     status: {
@@ -17,7 +20,14 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('password.email'));
+    form.post(route('password.email'), {
+        onSuccess: () => {
+            success('Password reset link sent! Check your email for instructions.');
+        },
+        onError: () => {
+            handleFormErrors(form.errors);
+        },
+    });
 };
 </script>
 

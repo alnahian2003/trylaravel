@@ -1,5 +1,6 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import ToastContainer from '@/Components/ToastContainer.vue';
 import { Link } from '@inertiajs/vue3';
 </script>
 
@@ -19,4 +20,6 @@ import { Link } from '@inertiajs/vue3';
             <slot />
         </div>
     </div>
+
+    <ToastContainer />
 </template>

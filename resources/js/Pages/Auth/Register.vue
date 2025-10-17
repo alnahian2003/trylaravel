@@ -5,6 +5,9 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useToast } from '@/composables/useToast';
+
+const { success, handleFormErrors } = useToast();
 
 const form = useForm({
     name: '',
@@ -15,6 +18,12 @@ const form = useForm({
 
 const submit = () => {
     form.post(route('register'), {
+        onSuccess: () => {
+            success('Account created successfully! Welcome to our platform.');
+        },
+        onError: () => {
+            handleFormErrors(form.errors);
+        },
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };

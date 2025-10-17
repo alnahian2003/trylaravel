@@ -4,6 +4,9 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { useToast } from '@/composables/useToast';
+
+const { success, handleFormErrors } = useToast();
 
 defineProps({
     mustVerifyEmail: {
@@ -20,6 +23,17 @@ const form = useForm({
     name: user.name,
     email: user.email,
 });
+
+const submit = () => {
+    form.patch(route('profile.update'), {
+        onSuccess: () => {
+            success('Profile updated successfully!');
+        },
+        onError: () => {
+            handleFormErrors(form.errors);
+        },
+    });
+};
 </script>
 
 <template>
@@ -35,7 +49,7 @@ const form = useForm({
         </header>
 
         <form
-            @submit.prevent="form.patch(route('profile.update'))"
+            @submit.prevent="submit"
             class="mt-6 space-y-6"
         >
             <div>
