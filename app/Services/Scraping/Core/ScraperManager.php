@@ -10,6 +10,7 @@ use App\Services\Scraping\Scrapers\Sites\LaravelNewsScraper;
 use App\Services\Scraping\Scrapers\Sites\MattStaufferScraper;
 use App\Services\Scraping\Scrapers\Sites\SpatieScraper;
 use App\Services\Scraping\Scrapers\Sites\StitcherScraper;
+use App\Services\Scraping\Scrapers\Sites\TightenScraper;
 use App\Services\Scraping\Transformers\PostTransformer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,7 @@ class ScraperManager
         'matt-stauffer' => MattStaufferScraper::class,
         'spatie' => SpatieScraper::class,
         'stitcher' => StitcherScraper::class,
+        'tighten' => TightenScraper::class,
     ];
 
     protected PostTransformer $transformer;

@@ -1,0 +1,31 @@
+site_key: "tighten"
+name: "Tighten"
+base_url: "https://tighten.com"
+articles_url: "https://tighten.com/insights"
+rate_limit: 1500
+
+selectors:
+  article_links: 'a[href*="/insights/"]:not([href="/insights"]):not([href="/insights/"])'
+  title: "h1, .font-serif.text-2xl, .font-serif.text-4xl"
+  content: "article, .prose, .post-content, main .content"
+  excerpt: "meta[name='description'], .line-clamp-3"
+  author: ".author-name, .post-author, .font-mono.font-semibold, meta[name='author']"
+  author_avatar: ".author-avatar img, .author img"
+  published_at: "time[datetime], .post-date"
+  reading_time: ".reading-time, .read-time"
+  tags: ".tags a, .post-tags a, .tag-list a"
+  categories: ".category a, .categories a"
+  featured_image: "meta[property='og:image'], .bg-cover[data-bg]"
+
+browser:
+  timeout: 35000
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  wait_until_network_idle: true
+  wait_for_selector: "article, .w-full, .font-serif"
+  headers:
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    Accept-Language: "en-US,en;q=0.5"
+
+retry:
+  max_attempts: 3
+  delay_ms: 1500

@@ -7,6 +7,7 @@ use App\Services\Scraping\Scrapers\Sites\LaravelNewsScraper;
 use App\Services\Scraping\Scrapers\Sites\MattStaufferScraper;
 use App\Services\Scraping\Scrapers\Sites\SpatieScraper;
 use App\Services\Scraping\Scrapers\Sites\StitcherScraper;
+use App\Services\Scraping\Scrapers\Sites\TightenScraper;
 use Illuminate\Console\Command;
 
 class TestScraper extends Command
@@ -127,6 +128,26 @@ class TestScraper extends Command
             $this->info('Author: '.$mattStaufferArticleData->author);
             $this->info('Tags: '.implode(', ', $mattStaufferArticleData->tags));
             $this->info('Content length: '.strlen($mattStaufferArticleData->content));
+
+            // Test Tighten scraper
+            $this->info('');
+            $this->info('Testing Tighten scraper...');
+            $tightenScraper = new TightenScraper;
+            $this->info('Tighten scraper created successfully');
+
+            $tightenConfig = $tightenScraper->getConfiguration();
+            $this->info('Tighten configuration loaded: '.$tightenConfig['name']);
+
+            // Test a single Tighten article
+            $tightenTestUrl = 'https://tighten.com/insights/sql-generated-columns-and-views-how-to-use-them-in-your-laravel-app';
+            $this->info("Testing Tighten article: {$tightenTestUrl}");
+
+            $tightenArticleData = $tightenScraper->scrapeArticle($tightenTestUrl);
+            $this->info('Tighten article scraped successfully!');
+            $this->info('Title: '.$tightenArticleData->title);
+            $this->info('Author: '.$tightenArticleData->author);
+            $this->info('Tags: '.implode(', ', $tightenArticleData->tags));
+            $this->info('Content length: '.strlen($tightenArticleData->content));
 
             return Command::SUCCESS;
 
