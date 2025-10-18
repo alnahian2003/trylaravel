@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Source;
 use App\Services\Scraping\Contracts\ScrapableInterface;
 use App\Services\Scraping\Scrapers\Sites\CodecourseScraper;
+use App\Services\Scraping\Scrapers\Sites\SpatieScraper;
 use App\Services\Scraping\Transformers\PostTransformer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -15,30 +16,31 @@ class ScraperManager
 {
     protected array $scrapers = [
         'codecourse' => CodecourseScraper::class,
+        'spatie' => SpatieScraper::class,
     ];
 
     protected PostTransformer $transformer;
 
     public function __construct()
     {
-        $this->transformer = new PostTransformer();
+        $this->transformer = new PostTransformer;
     }
 
     public function getScraper(string $siteKey): ScrapableInterface
     {
-        if (!isset($this->scrapers[$siteKey])) {
+        if (! isset($this->scrapers[$siteKey])) {
             throw new \InvalidArgumentException("Scraper not found for site: {$siteKey}");
         }
 
         $scraperClass = $this->scrapers[$siteKey];
-        
-        return new $scraperClass();
+
+        return new $scraperClass;
     }
 
     public function registerScraper(string $siteKey, string $scraperClass): void
     {
-        if (!is_subclass_of($scraperClass, ScrapableInterface::class)) {
-            throw new \InvalidArgumentException("Scraper class must implement ScrapableInterface");
+        if (! is_subclass_of($scraperClass, ScrapableInterface::class)) {
+            throw new \InvalidArgumentException('Scraper class must implement ScrapableInterface');
         }
 
         $this->scrapers[$siteKey] = $scraperClass;
@@ -53,9 +55,9 @@ class ScraperManager
     {
         $scraper = $this->getScraper($siteKey);
         $source = $this->getOrCreateSource($siteKey, $scraper);
-        
+
         Log::info("Starting scrape for {$siteKey}, max pages: {$maxPages}");
-        
+
         $results = [
             'site_key' => $siteKey,
             'pages_scraped' => 0,
@@ -75,8 +77,8 @@ class ScraperManager
                     $result = $this->processArticle($articleData, $source, $updateExisting);
                     $results[$result]++;
                 } catch (\Exception $e) {
-                    $results['errors'][] = "Failed to process article {$articleData->url}: " . $e->getMessage();
-                    Log::error("Failed to process article {$articleData->url}: " . $e->getMessage());
+                    $results['errors'][] = "Failed to process article {$articleData->url}: ".$e->getMessage();
+                    Log::error("Failed to process article {$articleData->url}: ".$e->getMessage());
                 }
             }
 
@@ -88,8 +90,8 @@ class ScraperManager
             Log::info("Completed scrape for {$siteKey}", $results);
 
         } catch (\Exception $e) {
-            $results['errors'][] = "Scraper failed: " . $e->getMessage();
-            Log::error("Scraper failed for {$siteKey}: " . $e->getMessage());
+            $results['errors'][] = 'Scraper failed: '.$e->getMessage();
+            Log::error("Scraper failed for {$siteKey}: ".$e->getMessage());
         }
 
         return $results;
@@ -113,8 +115,8 @@ class ScraperManager
             ];
 
         } catch (\Exception $e) {
-            Log::error("Failed to scrape article {$url}: " . $e->getMessage());
-            
+            Log::error("Failed to scrape article {$url}: ".$e->getMessage());
+
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -125,12 +127,13 @@ class ScraperManager
 
     protected function processArticle(ScrapedData $articleData, Source $source, bool $updateExisting): string
     {
-        return DB::transaction(function () use ($articleData, $source, $updateExisting) {
+        return DB::transaction(function () use ($articleData, $updateExisting) {
             $existingPost = Post::where('source_url', $articleData->url)->first();
 
             if ($existingPost) {
                 if ($updateExisting) {
                     $this->transformer->updatePost($existingPost, $articleData);
+
                     return 'articles_updated';
                 } else {
                     return 'articles_skipped';
@@ -138,6 +141,7 @@ class ScraperManager
             }
 
             $this->transformer->createPost($articleData);
+
             return 'articles_created';
         });
     }
@@ -146,12 +150,12 @@ class ScraperManager
     {
         $config = $scraper->getConfiguration();
         $siteName = $config['name'] ?? ucfirst($siteKey);
-        
+
         return Source::firstOrCreate(
             ['url' => $scraper->getBaseUrl()],
             [
                 'name' => $siteName,
-                'feed_url' => $scraper->getBaseUrl() . '/articles',
+                'feed_url' => $scraper->getBaseUrl().'/articles',
                 'description' => "Articles from {$siteName}",
                 'is_active' => true,
                 'metadata' => [
@@ -167,7 +171,7 @@ class ScraperManager
         try {
             $scraper = $this->getScraper($siteKey);
             $testUrl = $scraper->getBaseUrl();
-            
+
             $start = microtime(true);
             BrowserFactory::scrapeUrl($testUrl, ['timeout' => 10000]);
             $responseTime = round((microtime(true) - $start) * 1000);
@@ -192,6 +196,6 @@ class ScraperManager
     public function getAllSitesHealth(): Collection
     {
         return collect($this->getAvailableScrapers())
-            ->map(fn($siteKey) => $this->getSiteHealth($siteKey));
+            ->map(fn ($siteKey) => $this->getSiteHealth($siteKey));
     }
 }
