@@ -282,7 +282,7 @@ class ContentRankingService
         $domain = $this->extractDomain($post->source_url);
         
         // Cache the source distribution for performance
-        $sourceStats = Cache::remember('source_distribution', 3600, function () {
+        $sourceStats = Cache::remember('source_distribution_v3', 3600, function () {
             $totalPosts = Post::published()->count();
             if ($totalPosts === 0) {
                 return [];
@@ -293,17 +293,24 @@ class ContentRankingService
                 ->whereNotNull('source_url')
                 ->where('source_url', '!=', '')
                 ->groupBy('source_url')
-                ->get()
-                ->mapWithKeys(function ($item) use ($totalPosts) {
-                    $domain = $this->extractDomain($item->source_url);
-                    return [$domain => [
-                        'count' => $item->count,
-                        'percentage' => ($item->count / $totalPosts) * 100
-                    ]];
-                })
-                ->toArray();
+                ->get();
 
-            return $sources;
+            // Group by domain since multiple URLs can belong to same domain
+            $domainStats = [];
+            foreach ($sources as $source) {
+                $domain = $this->extractDomain($source->source_url);
+                if (!isset($domainStats[$domain])) {
+                    $domainStats[$domain] = ['count' => 0, 'percentage' => 0];
+                }
+                $domainStats[$domain]['count'] += $source->count;
+            }
+
+            // Calculate percentages after grouping
+            foreach ($domainStats as $domain => $stats) {
+                $domainStats[$domain]['percentage'] = ($stats['count'] / $totalPosts) * 100;
+            }
+
+            return $domainStats;
         });
 
         if (!isset($sourceStats[$domain])) {
@@ -312,18 +319,22 @@ class ContentRankingService
 
         $percentage = $sourceStats[$domain]['percentage'];
 
-        // Apply logarithmic penalty for over-represented sources
-        // Sources with >50% get heavily penalized, 20-50% get moderate penalty
-        if ($percentage > 50) {
-            return 2.0; // Heavy penalty for dominant sources (like stitcher.io)
-        } elseif ($percentage > 20) {
+        // Balanced scoring to prevent both over and under-representation extremes
+        // Target: 5-15% representation per source is ideal
+        if ($percentage > 60) {
+            return 1.0; // Heavy penalty for extremely dominant sources
+        } elseif ($percentage > 40) {
+            return 2.5; // Strong penalty for very over-represented sources
+        } elseif ($percentage > 25) {
             return 4.0; // Moderate penalty for over-represented sources
-        } elseif ($percentage > 10) {
-            return 6.0; // Slight penalty
-        } elseif ($percentage > 5) {
-            return 7.0; // Neutral
+        } elseif ($percentage > 15) {
+            return 5.5; // Slight penalty for moderately over-represented
+        } elseif ($percentage >= 5) {
+            return 7.0; // Ideal range - neutral to slight boost
+        } elseif ($percentage >= 2) {
+            return 6.5; // Small boost for under-represented sources
         } else {
-            return 9.0; // Boost for under-represented sources
+            return 5.5; // Very small sources get minimal boost to prevent gaming
         }
     }
 
