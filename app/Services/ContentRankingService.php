@@ -78,62 +78,84 @@ class ContentRankingService
     }
 
     /**
-     * Apply source diversity algorithm - no source repetition within every 10-post window
+     * Apply source diversity algorithm - ensures fair visibility for all sources
+     * Uses round-robin selection to prevent any source from dominating the feed
      */
     public function applySourceDiversity(EloquentCollection $posts, int $limit): EloquentCollection
     {
-        $result = new EloquentCollection;
-        $deferredPosts = [];
+        // Group posts by source domain for fair distribution
+        $postsBySource = $posts->groupBy(function ($post) {
+            return $this->extractDomain($post->source_url ?: 'unknown');
+        });
 
-        foreach ($posts as $post) {
-            if ($result->count() >= $limit) {
-                break;
-            }
+        // Convert to arrays with source tracking for round-robin
+        $sourceQueues = [];
+        $sourceUsageCount = [];
 
-            $source = $this->extractDomain($post->source_url ?: 'unknown');
-
-            // Check if this source already appears in the last 10 posts
-            $canAdd = true;
-            if ($result->count() > 0) {
-                $windowSize = min(10, $result->count());
-                $recentPosts = $result->slice(-$windowSize);
-                
-                $recentSources = $recentPosts->map(function ($p) {
-                    return $this->extractDomain($p->source_url ?: 'unknown');
-                })->all();
-
-                if (in_array($source, $recentSources)) {
-                    $canAdd = false;
-                }
-            }
-
-            if ($canAdd) {
-                $result->push($post);
-            } else {
-                // Store for potential later use
-                $deferredPosts[] = $post;
-            }
+        foreach ($postsBySource as $source => $sourcePosts) {
+            $sourceQueues[$source] = $sourcePosts->values();
+            $sourceUsageCount[$source] = 0;
         }
 
-        // Fill remaining spots with deferred posts if we haven't reached the limit
-        if ($result->count() < $limit && !empty($deferredPosts)) {
-            foreach ($deferredPosts as $post) {
+        $result = new EloquentCollection;
+
+        // Handle edge case where no posts are available
+        if (empty($sourceQueues)) {
+            return $result;
+        }
+
+        $roundNumber = 0;
+        $maxRoundsPerSource = ceil($limit / count($sourceQueues));
+
+        // Round-robin selection: give each source a fair turn
+        while ($result->count() < $limit && ! empty($sourceQueues)) {
+            $addedInThisRound = false;
+
+            foreach ($sourceQueues as $source => $queue) {
                 if ($result->count() >= $limit) {
                     break;
                 }
 
-                $source = $this->extractDomain($post->source_url ?: 'unknown');
-                
-                // Check again if we can add it now (window may have shifted)
-                $windowSize = min(10, $result->count());
-                $recentPosts = $result->slice(-$windowSize);
-                
-                $recentSources = $recentPosts->map(function ($p) {
-                    return $this->extractDomain($p->source_url ?: 'unknown');
-                })->all();
+                // Skip if this source has no more posts
+                if ($queue->isEmpty()) {
+                    continue;
+                }
 
-                if (!in_array($source, $recentSources)) {
+                // Limit how many posts per source in early rounds to ensure fairness
+                $maxForThisRound = min(
+                    $maxRoundsPerSource,
+                    // In early rounds, be stricter to ensure all sources get representation
+                    $roundNumber < 3 ? 1 : 2
+                );
+
+                if ($sourceUsageCount[$source] < ($roundNumber + 1) * $maxForThisRound) {
+                    $post = $sourceQueues[$source]->shift();
                     $result->push($post);
+                    $sourceUsageCount[$source]++;
+                    $addedInThisRound = true;
+
+                    // Remove empty queues
+                    if ($sourceQueues[$source]->isEmpty()) {
+                        unset($sourceQueues[$source]);
+                    }
+                }
+            }
+
+            // If no posts were added in this round, move to next round or break
+            if (! $addedInThisRound) {
+                $roundNumber++;
+
+                // If we've done many rounds and still have empty spots, fill with remaining posts
+                if ($roundNumber > 10) {
+                    foreach ($sourceQueues as $source => $queue) {
+                        foreach ($queue as $post) {
+                            if ($result->count() >= $limit) {
+                                break 2;
+                            }
+                            $result->push($post);
+                        }
+                    }
+                    break;
                 }
             }
         }
@@ -270,7 +292,7 @@ class ContentRankingService
         }
 
         $domain = $this->extractDomain($post->source_url);
-        
+
         // Cache the source distribution for performance
         $sourceStats = Cache::remember('source_distribution_v3', 3600, function () {
             $totalPosts = Post::published()->count();
@@ -289,7 +311,7 @@ class ContentRankingService
             $domainStats = [];
             foreach ($sources as $source) {
                 $domain = $this->extractDomain($source->source_url);
-                if (!isset($domainStats[$domain])) {
+                if (! isset($domainStats[$domain])) {
                     $domainStats[$domain] = ['count' => 0, 'percentage' => 0];
                 }
                 $domainStats[$domain]['count'] += $source->count;
@@ -303,7 +325,7 @@ class ContentRankingService
             return $domainStats;
         });
 
-        if (!isset($sourceStats[$domain])) {
+        if (! isset($sourceStats[$domain])) {
             return 5.0; // Neutral score for new sources
         }
 

@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\PostType;
 use App\Models\Post;
 use Illuminate\Database\Seeder;
 
@@ -17,55 +16,55 @@ class PostSeeder extends Seeder
 
         // Create published blog posts
         Post::factory()
-            ->count(25)
+            ->count(250000)
             ->blogPost()
             ->published()
             ->create();
 
         // Create draft blog posts
         Post::factory()
-            ->count(5)
+            ->count(500)
             ->blogPost()
             ->draft()
             ->create();
 
-        // Create published videos
-        Post::factory()
-            ->count(15)
-            ->video()
-            ->published()
-            ->create();
+        // // Create published videos
+        // Post::factory()
+        //     ->count(15)
+        //     ->video()
+        //     ->published()
+        //     ->create();
 
-        // Create draft videos
-        Post::factory()
-            ->count(3)
-            ->video()
-            ->draft()
-            ->create();
+        // // Create draft videos
+        // Post::factory()
+        //     ->count(3)
+        //     ->video()
+        //     ->draft()
+        //     ->create();
 
-        // Create published podcasts
-        Post::factory()
-            ->count(12)
-            ->podcast()
-            ->published()
-            ->create();
+        // // Create published podcasts
+        // Post::factory()
+        //     ->count(12)
+        //     ->podcast()
+        //     ->published()
+        //     ->create();
 
-        // Create draft podcasts
-        Post::factory()
-            ->count(2)
-            ->podcast()
-            ->draft()
-            ->create();
+        // // Create draft podcasts
+        // Post::factory()
+        //     ->count(2)
+        //     ->podcast()
+        //     ->draft()
+        //     ->create();
 
-        // Create some popular content
-        Post::factory()
-            ->count(5)
-            ->published()
-            ->popular()
-            ->create();
+        // // Create some popular content
+        // Post::factory()
+        //     ->count(5)
+        //     ->published()
+        //     ->popular()
+        //     ->create();
 
         // Create featured Laravel content
-        $this->createFeaturedLaravelContent();
+        // $this->createFeaturedLaravelContent();
 
         $this->command->info('Posts created successfully!');
         $this->command->table(

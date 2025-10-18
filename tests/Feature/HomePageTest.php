@@ -135,6 +135,8 @@ class HomePageTest extends TestCase
                 ->has('is_liked')
                 ->has('is_bookmarked')
                 ->has('is_seen')
+                ->has('source_url')
+                ->has('ranking_score')
             )
         );
     }
@@ -149,7 +151,8 @@ class HomePageTest extends TestCase
         $this->assertTrue(method_exists(\App\Http\Controllers\HomeController::class, 'getTrendingTags'));
 
         // Test the actual stats calculation
-        $controller = new \App\Http\Controllers\HomeController;
+        $rankingService = new \App\Services\ContentRankingService;
+        $controller = new \App\Http\Controllers\HomeController($rankingService);
         $reflection = new \ReflectionClass($controller);
         $method = $reflection->getMethod('getTrendingTags');
         $method->setAccessible(true);
