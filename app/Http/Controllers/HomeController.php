@@ -6,6 +6,7 @@ use App\Enums\PostType;
 use App\Http\Requests\ReportPostRequest;
 use App\Models\Post;
 use App\Models\Report;
+use App\Services\ContentRankingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -13,13 +14,19 @@ use Inertia\Response;
 
 class HomeController extends Controller
 {
+    public function __construct(
+        private ContentRankingService $rankingService
+    ) {}
+
     public function index(Request $request): Response
     {
+        $user = auth()->user();
+        
+        // Use smart algorithm for anonymous users, user preferences for authenticated users
+        $posts = $user ? $this->getPostsForAuthenticatedUser($user, $request) : $this->getPostsForAnonymousUser($request);
+
         return Inertia::render('Home/Index', [
-            'posts' => Inertia::scroll(fn () => Post::query()
-                ->published()
-                ->latest('published_at')
-                ->paginate(12)
+            'posts' => Inertia::scroll(fn () => $posts->paginate(12)
                 ->through(function (Post $post) {
                     return [
                         'id' => $post->id,
@@ -43,10 +50,13 @@ class HomeController extends Controller
                         'tags' => $post->tags,
                         'featured_image' => $post->featured_image,
                         'meta' => $post->meta,
+                        'source_url' => $post->source_url,
                         // User interactions
                         'is_liked' => $post->isLikedBy(auth()->user()),
                         'is_bookmarked' => $post->isBookmarkedBy(auth()->user()),
                         'is_seen' => $post->isSeenBy(auth()->user()),
+                        // Algorithm metadata for debugging (only in development)
+                        'ranking_score' => app()->environment('local') ? $this->rankingService->calculateContentScore($post) : null,
                     ];
                 })
             ),
@@ -67,7 +77,107 @@ class HomeController extends Controller
             'filters' => [
                 'types' => PostType::options(),
             ],
+            // Hero content for anonymous users
+            'heroContent' => !$user ? $this->rankingService->getHeroContent(3)->map(function (Post $post) {
+                return [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'excerpt' => $post->excerpt,
+                    'type' => [
+                        'value' => $post->type->value,
+                        'label' => $post->getTypeLabel(),
+                        'icon' => $post->getTypeIcon(),
+                        'color' => $post->getTypeColor(),
+                    ],
+                    'author' => [
+                        'name' => $post->author_name,
+                        'avatar' => $post->author_avatar,
+                    ],
+                    'published_at' => $post->published_at?->diffForHumans(),
+                    'views_count' => $post->views_count,
+                    'likes_count' => $post->likes_count,
+                    'featured_image' => $post->featured_image,
+                    'tags' => $post->tags,
+                ];
+            }) : null,
+            
+            // Trending content for anonymous users
+            'trendingContent' => !$user ? $this->rankingService->getTrendingPosts(5)->map(function (Post $post) {
+                return [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'excerpt' => $post->excerpt,
+                    'type' => [
+                        'value' => $post->type->value,
+                        'label' => $post->getTypeLabel(),
+                        'icon' => $post->getTypeIcon(),
+                        'color' => $post->getTypeColor(),
+                    ],
+                    'author' => [
+                        'name' => $post->author_name,
+                        'avatar' => $post->author_avatar,
+                    ],
+                    'published_at' => $post->published_at?->diffForHumans(),
+                    'views_count' => $post->views_count,
+                    'likes_count' => $post->likes_count,
+                    'featured_image' => $post->featured_image,
+                ];
+            }) : null,
         ]);
+    }
+
+    /**
+     * Get posts for authenticated users (based on their sources)
+     */
+    private function getPostsForAuthenticatedUser($user, Request $request)
+    {
+        $query = Post::query()->published();
+
+        // Filter by user's sources if they have any
+        $userSources = $user->sources()->where('is_active', true)->pluck('url');
+        if ($userSources->isNotEmpty()) {
+            $query->whereIn('source_url', $userSources);
+        }
+
+        // Apply additional filters from request
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        return $query->latest('published_at');
+    }
+
+    /**
+     * Get algorithmically ranked posts for anonymous users
+     */
+    private function getPostsForAnonymousUser(Request $request)
+    {
+        // Get base posts
+        $query = Post::query()->published();
+
+        // Apply filters from request
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Get all posts and rank them
+        $posts = $query->get();
+        $rankedPosts = $this->rankingService->rankForAnonymousUser($posts);
+
+        // Convert back to query builder for pagination
+        $postIds = $rankedPosts->pluck('id')->toArray();
+        
+        if (empty($postIds)) {
+            return Post::query()->whereRaw('1 = 0'); // Empty query
+        }
+
+        // Return posts in ranked order
+        return Post::query()
+            ->published()
+            ->whereIn('id', $postIds)
+            ->orderByRaw('FIELD(id, ' . implode(',', $postIds) . ')');
     }
 
     public function show(Post $post): Response
