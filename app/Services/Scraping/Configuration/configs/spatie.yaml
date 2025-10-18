@@ -1,0 +1,29 @@
+site_key: "spatie"
+name: "Spatie"
+base_url: "https://spatie.be"
+articles_url: "https://spatie.be/blog"
+rate_limit: 1000
+
+selectors:
+  article_links: "a[href*='/blog/']:not([href='/blog'])"
+  title: "h1"
+  content: ".markup, .content-markup, [class*='content']"
+  excerpt: "meta[name='description']"
+  author: ".leading-none.text-oss-royal-blue.font-bold, .font-bold"
+  author_avatar: "img[src*='gravatar.com']"
+  published_at: "time[datetime]"
+  reading_time: ""
+  tags: "[class*='lowercase'].font-bold li, .font-semibold.text-oss-royal-blue"
+  featured_image: "meta[property='og:image']"
+
+browser:
+  timeout: 30000
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+  wait_until_network_idle: true
+  headers:
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    Accept-Language: "en-US,en;q=0.5"
+
+retry:
+  max_attempts: 3
+  delay_ms: 1000
