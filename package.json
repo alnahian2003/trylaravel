@@ -21,6 +21,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "prismjs": "^1.30.0",
         "puppeteer": "^24.25.0"
     }
 }

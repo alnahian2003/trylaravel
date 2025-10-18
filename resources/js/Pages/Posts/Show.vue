@@ -1,9 +1,34 @@
 <script setup>
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { useToast } from '@/composables/useToast';
 import ToastContainer from '@/Components/ToastContainer.vue';
 import Modal from '@/Components/Modal.vue';
+import Prism from 'prismjs';
+
+// Import Prism CSS theme
+import 'prismjs/themes/prism-tomorrow.css';
+
+// Import Prism languages
+import 'prismjs/components/prism-php';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-sass';
+import 'prismjs/components/prism-scss';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-sql';
+import 'prismjs/components/prism-yaml';
+import 'prismjs/components/prism-markdown';
+import 'prismjs/components/prism-docker';
+import 'prismjs/components/prism-nginx';
+
+// Import Prism plugins
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
+import 'prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard';
+import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 
 const { success, error, handleApiError } = useToast();
 
@@ -347,8 +372,142 @@ const submitReport = async (reportData) => {
     }
 };
 
+// Syntax highlighting function
+const highlightCodeBlocks = () => {
+    nextTick(() => {
+        // Configure normalize whitespace plugin
+        Prism.plugins.NormalizeWhitespace.setDefaults({
+            'remove-trailing': true,
+            'remove-indent': true,
+            'left-trim': true,
+            'right-trim': true,
+            'break-lines': 120,
+            'indent': 2,
+            'remove-initial-line-feed': false,
+            'tabs-to-spaces': 4,
+            'spaces-to-tabs': 0
+        });
+
+        // Select all code blocks
+        const codeBlocks = document.querySelectorAll('.article-content pre code');
+        const preBlocks = document.querySelectorAll('.article-content pre');
+        
+        // Add line numbers to pre blocks
+        preBlocks.forEach((block) => {
+            if (!block.classList.contains('line-numbers')) {
+                block.classList.add('line-numbers');
+            }
+        });
+
+        // Highlight code blocks
+        codeBlocks.forEach((block) => {
+            // Auto-detect language if not specified
+            if (!block.className.includes('language-')) {
+                const codeContent = block.textContent || '';
+                const detectedLang = detectLanguage(codeContent);
+                if (detectedLang) {
+                    block.classList.add(`language-${detectedLang}`);
+                }
+            }
+            
+            Prism.highlightElement(block);
+        });
+    });
+};
+
+// Enhanced language detection function
+const detectLanguage = (code) => {
+    const trimmedCode = code.trim();
+    
+    // PHP detection - more comprehensive
+    if (trimmedCode.includes('<?php') || 
+        trimmedCode.includes('namespace ') ||
+        trimmedCode.includes('use ') ||
+        (trimmedCode.includes('$') && (trimmedCode.includes('->') || trimmedCode.includes('::'))) ||
+        trimmedCode.includes('class ') ||
+        trimmedCode.includes('function ') ||
+        trimmedCode.includes('public ') ||
+        trimmedCode.includes('private ') ||
+        trimmedCode.includes('protected ')) {
+        return 'php';
+    }
+    
+    // JavaScript/TypeScript detection
+    if (trimmedCode.includes('function') || 
+        trimmedCode.includes('const ') || 
+        trimmedCode.includes('let ') || 
+        trimmedCode.includes('var ') || 
+        trimmedCode.includes('=>') ||
+        trimmedCode.includes('import ') ||
+        trimmedCode.includes('export ') ||
+        trimmedCode.includes('require(')) {
+        return 'javascript';
+    }
+    
+    // CSS/SCSS detection
+    if ((trimmedCode.includes('{') && trimmedCode.includes('}') && trimmedCode.includes(':')) && 
+        !trimmedCode.includes('function') && 
+        !trimmedCode.includes('if') && 
+        !trimmedCode.includes('for')) {
+        return 'css';
+    }
+    
+    // JSON detection
+    if ((trimmedCode.startsWith('{') && trimmedCode.endsWith('}')) || 
+        (trimmedCode.startsWith('[') && trimmedCode.endsWith(']'))) {
+        try {
+            JSON.parse(trimmedCode);
+            return 'json';
+        } catch (e) {
+            // Not valid JSON
+        }
+    }
+    
+    // Bash/Shell detection
+    if (trimmedCode.includes('#!/bin/bash') || 
+        trimmedCode.includes('sudo ') || 
+        trimmedCode.includes('npm ') || 
+        trimmedCode.includes('composer ') ||
+        trimmedCode.includes('artisan ') ||
+        trimmedCode.includes('php ') ||
+        /^\$\s/.test(trimmedCode)) {
+        return 'bash';
+    }
+    
+    // SQL detection
+    const upperCode = trimmedCode.toUpperCase();
+    if (upperCode.includes('SELECT') || 
+        upperCode.includes('UPDATE') || 
+        upperCode.includes('INSERT') ||
+        upperCode.includes('CREATE TABLE') ||
+        upperCode.includes('ALTER TABLE') ||
+        upperCode.includes('DROP TABLE')) {
+        return 'sql';
+    }
+    
+    // YAML detection
+    if (trimmedCode.includes(':') && 
+        (trimmedCode.includes('  ') || trimmedCode.includes('\t')) &&
+        !trimmedCode.includes('{') &&
+        !trimmedCode.includes('function')) {
+        return 'yaml';
+    }
+    
+    // Markdown detection
+    if (trimmedCode.includes('# ') || 
+        trimmedCode.includes('## ') || 
+        trimmedCode.includes('```') ||
+        trimmedCode.includes('*') ||
+        trimmedCode.includes('[') && trimmedCode.includes(']')) {
+        return 'markdown';
+    }
+    
+    return 'text'; // Default fallback
+};
+
 onMounted(() => {
     window.addEventListener('scroll', updateReadingProgress);
+    highlightCodeBlocks();
 });
 
 onUnmounted(() => {
@@ -549,7 +708,7 @@ onUnmounted(() => {
                     <div v-if="post.excerpt" class="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed font-medium">
                         {{ post.excerpt }}
                     </div>
-                    <div class="prose prose-base sm:prose-lg max-w-none" v-html="post.content"></div>
+                    <div class="prose prose-base sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-em:text-gray-600" v-html="post.content"></div>
                 </article>
 
                 <!-- Article Footer -->
@@ -926,6 +1085,280 @@ onUnmounted(() => {
     overflow: hidden;
 }
 
+/* Enhanced Prism.js syntax highlighting styles */
+.article-content :deep(pre) {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    padding: 1rem !important;
+    border-radius: 0.75rem !important;
+    overflow-x: auto !important;
+    margin: 1.5rem 0 !important;
+    font-size: 0.875rem !important;
+    font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace !important;
+    line-height: 1.6 !important;
+    position: relative !important;
+    border: 1px solid #333333 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+    
+    /* Enable proper scrolling for long lines */
+    white-space: pre !important;
+    word-wrap: normal !important;
+    overflow-wrap: normal !important;
+}
+
+@media (min-width: 640px) {
+    .article-content :deep(pre) {
+        padding: 1.25rem !important;
+        border-radius: 1rem !important;
+        margin: 2rem 0 !important;
+        font-size: 0.9375rem !important;
+    }
+}
+
+.article-content :deep(pre code) {
+    background: none !important;
+    color: inherit !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    font-size: inherit !important;
+    font-family: inherit !important;
+    white-space: inherit !important;
+    word-wrap: inherit !important;
+    overflow-wrap: inherit !important;
+    line-height: inherit !important;
+    display: block !important;
+}
+
+/* Line numbers styling */
+.article-content :deep(pre.line-numbers) {
+    position: relative !important;
+    padding-left: 3.5rem !important;
+    counter-reset: linenumber !important;
+}
+
+@media (min-width: 640px) {
+    .article-content :deep(pre.line-numbers) {
+        padding-left: 4rem !important;
+    }
+}
+
+.article-content :deep(pre.line-numbers > code) {
+    position: relative !important;
+    white-space: inherit !important;
+}
+
+.article-content :deep(.line-numbers .line-numbers-rows) {
+    position: absolute !important;
+    pointer-events: none !important;
+    top: 0 !important;
+    font-size: 100% !important;
+    left: -3.8rem !important;
+    width: 3rem !important;
+    letter-spacing: -1px !important;
+    border-right: 1px solid #555555 !important;
+    user-select: none !important;
+    counter-reset: linenumber !important;
+}
+
+.article-content :deep(.line-numbers-rows > span) {
+    display: block !important;
+    counter-increment: linenumber !important;
+}
+
+.article-content :deep(.line-numbers-rows > span:before) {
+    content: counter(linenumber) !important;
+    color: #888888 !important;
+    display: block !important;
+    padding-right: 0.8rem !important;
+    text-align: right !important;
+    font-weight: 500 !important;
+}
+
+/* Enhanced Prism.js token colors with high contrast and vibrant colors */
+.article-content :deep(.token.comment),
+.article-content :deep(.token.prolog),
+.article-content :deep(.token.doctype),
+.article-content :deep(.token.cdata) {
+    color: #90ee90 !important;
+    font-style: italic !important;
+}
+
+.article-content :deep(.token.punctuation) {
+    color: #ffffff !important;
+}
+
+.article-content :deep(.token.property),
+.article-content :deep(.token.tag),
+.article-content :deep(.token.constant),
+.article-content :deep(.token.symbol),
+.article-content :deep(.token.deleted) {
+    color: #ff6b6b !important;
+    font-weight: 600 !important;
+}
+
+.article-content :deep(.token.boolean),
+.article-content :deep(.token.number) {
+    color: #ffd93d !important;
+    font-weight: 700 !important;
+}
+
+.article-content :deep(.token.selector),
+.article-content :deep(.token.attr-name),
+.article-content :deep(.token.string),
+.article-content :deep(.token.char),
+.article-content :deep(.token.builtin),
+.article-content :deep(.token.inserted) {
+    color: #6bcf7f !important;
+    font-weight: 500 !important;
+}
+
+.article-content :deep(.token.operator),
+.article-content :deep(.token.entity),
+.article-content :deep(.token.url),
+.article-content :deep(.language-css .token.string),
+.article-content :deep(.style .token.string),
+.article-content :deep(.token.variable) {
+    color: #4ecdc4 !important;
+    font-weight: 600 !important;
+}
+
+.article-content :deep(.token.atrule),
+.article-content :deep(.token.attr-value),
+.article-content :deep(.token.function),
+.article-content :deep(.token.class-name) {
+    color: #a78bfa !important;
+    font-weight: 700 !important;
+}
+
+.article-content :deep(.token.keyword) {
+    color: #ff8cc8 !important;
+    font-weight: 800 !important;
+}
+
+.article-content :deep(.token.regex),
+.article-content :deep(.token.important) {
+    color: #ff5722 !important;
+    font-weight: 700 !important;
+}
+
+.article-content :deep(.token.namespace) {
+    color: #81c784 !important;
+    opacity: 0.9 !important;
+}
+
+.article-content :deep(.token.php-variable) {
+    color: #ffb74d !important;
+    font-weight: 600 !important;
+}
+
+.article-content :deep(.token.php-function) {
+    color: #4dd0e1 !important;
+    font-weight: 600 !important;
+}
+
+/* Additional specific token styling for better visibility */
+.article-content :deep(.token.arrow) {
+    color: #ff9800 !important;
+    font-weight: 700 !important;
+}
+
+.article-content :deep(.token.builtin.class-name) {
+    color: #e91e63 !important;
+    font-weight: 700 !important;
+}
+
+.article-content :deep(.token.method) {
+    color: #2196f3 !important;
+    font-weight: 600 !important;
+}
+
+.article-content :deep(.token.parameter) {
+    color: #ff9800 !important;
+    font-weight: 500 !important;
+}
+
+.article-content :deep(.token.annotation) {
+    color: #9c27b0 !important;
+    font-weight: 600 !important;
+}
+
+/* Copy button styling */
+.article-content :deep(.toolbar) {
+    position: absolute !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+    z-index: 10 !important;
+}
+
+.article-content :deep(.toolbar .toolbar-item) {
+    display: inline-block !important;
+}
+
+.article-content :deep(.toolbar .toolbar-item button) {
+    background: #333333 !important;
+    border: none !important;
+    color: #ffffff !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.25rem !important;
+    font-size: 0.75rem !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s !important;
+}
+
+.article-content :deep(.toolbar .toolbar-item button:hover) {
+    background: #555555 !important;
+}
+
+/* Additional PHP-specific highlighting for better visibility */
+.article-content :deep(.language-php .token.variable) {
+    color: #ffcc02 !important;
+    font-weight: 600 !important;
+}
+
+.article-content :deep(.language-php .token.function) {
+    color: #74b9ff !important;
+    font-weight: 700 !important;
+}
+
+.article-content :deep(.language-php .token.class-name) {
+    color: #fd79a8 !important;
+    font-weight: 700 !important;
+}
+
+.article-content :deep(.language-php .token.keyword) {
+    color: #e17055 !important;
+    font-weight: 800 !important;
+}
+
+/* JavaScript-specific highlighting */
+.article-content :deep(.language-javascript .token.function) {
+    color: #55a3ff !important;
+    font-weight: 700 !important;
+}
+
+.article-content :deep(.language-javascript .token.keyword) {
+    color: #ff6b9d !important;
+    font-weight: 800 !important;
+}
+
+/* Ensure all code text is visible with minimum color */
+.article-content :deep(pre code),
+.article-content :deep(pre .token) {
+    color: inherit !important;
+    opacity: 1 !important;
+}
+
+/* Default text color for unmatched tokens */
+.article-content :deep(pre code .token:not([class*="token-"])) {
+    color: #ffffff !important;
+}
+
+/* Make sure plain text in code blocks is white */
+.article-content :deep(pre),
+.article-content :deep(pre code) {
+    color: #ffffff !important;
+}
+
 .prose {
     color: #374151;
     line-height: 1.75;
@@ -1023,38 +1456,103 @@ onUnmounted(() => {
 }
 
 .prose code {
-    background-color: #f3f4f6;
-    color: #1f2937;
+    background-color: #f7fafc;
+    color: #2d3748;
     padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
+    border-radius: 0.375rem;
     font-size: 0.8125rem;
+    font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
 }
 
 @media (min-width: 640px) {
     .prose code {
         padding: 0.25rem 0.5rem;
-        border-radius: 0.375rem;
+        border-radius: 0.5rem;
         font-size: 0.875rem;
     }
 }
 
+/* Ensure inline code doesn't inherit pre styles */
+.prose p code,
+.prose li code,
+.prose td code,
+.prose h1 code,
+.prose h2 code,
+.prose h3 code,
+.prose h4 code,
+.prose h5 code,
+.prose h6 code {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+    padding: 0.125rem 0.375rem !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.8125rem !important;
+    font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace !important;
+    font-weight: 600 !important;
+    border: 1px solid #e2e8f0 !important;
+    white-space: nowrap !important;
+}
+
+@media (min-width: 640px) {
+    .prose p code,
+    .prose li code,
+    .prose td code,
+    .prose h1 code,
+    .prose h2 code,
+    .prose h3 code,
+    .prose h4 code,
+    .prose h5 code,
+    .prose h6 code {
+        padding: 0.25rem 0.5rem !important;
+        border-radius: 0.5rem !important;
+        font-size: 0.875rem !important;
+    }
+}
+
 .prose pre {
-    background-color: #1f2937;
-    color: #f9fafb;
-    padding: 0.75rem;
-    border-radius: 0.375rem;
-    overflow-x: auto;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    padding: 1rem !important;
+    border-radius: 0.75rem !important;
+    overflow-x: auto !important;
+    margin: 1.5rem 0 !important;
+    font-size: 0.875rem !important;
+    font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace !important;
+    line-height: 1.6 !important;
+    position: relative !important;
+    border: 1px solid #333333 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+    white-space: pre !important;
+    word-wrap: normal !important;
+    overflow-wrap: normal !important;
 }
 
 @media (min-width: 640px) {
     .prose pre {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-        font-size: 0.9375rem;
+        padding: 1.25rem !important;
+        border-radius: 1rem !important;
+        margin: 2rem 0 !important;
+        font-size: 0.9375rem !important;
     }
+}
+
+/* Ensure pre code inherits proper styling */
+.prose pre code {
+    background: none !important;
+    color: inherit !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    font-size: inherit !important;
+    font-family: inherit !important;
+    font-weight: normal !important;
+    border: none !important;
+    white-space: inherit !important;
+    word-wrap: inherit !important;
+    overflow-wrap: inherit !important;
+    line-height: inherit !important;
+    display: block !important;
 }
 
 .prose blockquote {
