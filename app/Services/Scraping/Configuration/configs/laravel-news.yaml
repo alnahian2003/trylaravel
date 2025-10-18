@@ -1,0 +1,43 @@
+site_key: "laravel-news"
+name: "Laravel News"
+base_url: "https://laravel-news.com"
+articles_url: "https://laravel-news.com"
+rate_limit: 2000
+
+selectors:
+  article_links: "a[href*='/blog/'], a[href*='laravel-news.com'][href*='/']"
+  title: "h1.entry-title, h1.post-title, h1"
+  content: ".entry-content, .post-content, .article-content, article"
+  excerpt: "meta[name='description']"
+  author: ".author-name, .post-author, .entry-author, meta[name='author']"
+  author_avatar: ".author-avatar img, .author img, .post-author img"
+  published_at: "time[datetime], .post-date, .entry-date"
+  reading_time: ".reading-time, .read-time, .estimated-reading-time"
+  tags: ".tags a, .post-tags a, .entry-tags a"
+  categories: ".category a, .categories a, .post-category a"
+  featured_image: "meta[property='og:image']"
+
+browser:
+  timeout: 60000
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  wait_until_network_idle: true
+  wait_for_selector: "article, .post, .entry, .content"
+  wait_for_load_state: "networkidle"
+  extra_wait: 5000
+  javascript_enabled: true
+  extra_headers:
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+    Accept-Language: "en-US,en;q=0.9"
+    Accept-Encoding: "gzip, deflate, br"
+    Sec-Ch-Ua: '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"'
+    Sec-Ch-Ua-Mobile: "?0"
+    Sec-Ch-Ua-Platform: '"macOS"'
+    Sec-Fetch-Dest: "document"
+    Sec-Fetch-Mode: "navigate"
+    Sec-Fetch-Site: "none"
+    Sec-Fetch-User: "?1"
+    Upgrade-Insecure-Requests: "1"
+
+retry:
+  max_attempts: 5
+  delay_ms: 3000

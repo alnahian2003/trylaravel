@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Source;
 use App\Services\Scraping\Contracts\ScrapableInterface;
 use App\Services\Scraping\Scrapers\Sites\CodecourseScraper;
+use App\Services\Scraping\Scrapers\Sites\LaravelNewsScraper;
 use App\Services\Scraping\Scrapers\Sites\SpatieScraper;
 use App\Services\Scraping\Scrapers\Sites\StitcherScraper;
 use App\Services\Scraping\Transformers\PostTransformer;
@@ -17,6 +18,7 @@ class ScraperManager
 {
     protected array $scrapers = [
         'codecourse' => CodecourseScraper::class,
+        'laravel-news' => LaravelNewsScraper::class,
         'spatie' => SpatieScraper::class,
         'stitcher' => StitcherScraper::class,
     ];
