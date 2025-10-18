@@ -18,7 +18,8 @@ class HomeControllerShowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->controller = new HomeController;
+        $rankingService = $this->app->make(\App\Services\ContentRankingService::class);
+        $this->controller = new HomeController($rankingService);
     }
 
     #[Test]

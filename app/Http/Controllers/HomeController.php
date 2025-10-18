@@ -21,7 +21,7 @@ class HomeController extends Controller
     public function index(Request $request): Response
     {
         $user = auth()->user();
-        
+
         // Use smart algorithm for anonymous users, user preferences for authenticated users
         $posts = $user ? $this->getPostsForAuthenticatedUser($user, $request) : $this->getPostsForAnonymousUser($request);
 
@@ -78,7 +78,7 @@ class HomeController extends Controller
                 'types' => PostType::options(),
             ],
             // Hero content for anonymous users
-            'heroContent' => !$user ? $this->rankingService->getHeroContent(3)->map(function (Post $post) {
+            'heroContent' => ! $user ? $this->rankingService->getHeroContent(3)->map(function (Post $post) {
                 return [
                     'id' => $post->id,
                     'title' => $post->title,
@@ -101,9 +101,9 @@ class HomeController extends Controller
                     'tags' => $post->tags,
                 ];
             }) : null,
-            
+
             // Trending content for anonymous users
-            'trendingContent' => !$user ? $this->rankingService->getTrendingPosts(5)->map(function (Post $post) {
+            'trendingContent' => ! $user ? $this->rankingService->getTrendingPosts(5)->map(function (Post $post) {
                 return [
                     'id' => $post->id,
                     'title' => $post->title,
@@ -154,37 +154,39 @@ class HomeController extends Controller
      */
     private function getPostsForAnonymousUser(Request $request)
     {
-        // Get base posts
-        $query = Post::query()->published();
+        // Use efficient ranking with source diversity
+        // Get more posts than we paginate to ensure diversity works well
+        $rankedPosts = $this->rankingService->getRankedPostsForAnonymousUser(200);
 
-        // Apply filters from request
+        // Apply any additional filters to the ranked results
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $rankedPosts = $rankedPosts->where('type', $request->type);
         }
 
-        // Get all posts and rank them
-        $posts = $query->get();
-        $rankedPosts = $this->rankingService->rankForAnonymousUser($posts);
-
-        // Convert back to query builder for pagination
         $postIds = $rankedPosts->pluck('id')->toArray();
-        
+
         if (empty($postIds)) {
             return Post::query()->whereRaw('1 = 0'); // Empty query
         }
 
-        // Return posts in ranked order
-        $query = Post::query()
-            ->published()
-            ->whereIn('id', $postIds);
-            
-        // Use CASE WHEN for SQLite compatibility instead of FIELD()
-        $orderCases = [];
-        foreach ($postIds as $index => $id) {
-            $orderCases[] = "WHEN id = {$id} THEN {$index}";
+        // Return as query builder for pagination, maintaining order
+        // Use more efficient ordering for smaller result sets
+        if (count($postIds) <= 100) {
+            $orderCases = [];
+            foreach ($postIds as $index => $id) {
+                $orderCases[] = "WHEN id = {$id} THEN {$index}";
+            }
+
+            return Post::query()
+                ->whereIn('id', $postIds)
+                ->orderByRaw('CASE '.implode(' ', $orderCases).' END');
+        } else {
+            // For larger sets, use the database ordering
+            return Post::query()
+                ->whereIn('id', $postIds)
+                ->orderByDesc('ranking_score')
+                ->orderByDesc('published_at');
         }
-        
-        return $query->orderByRaw('CASE ' . implode(' ', $orderCases) . ' END');
     }
 
     public function show(Post $post): Response

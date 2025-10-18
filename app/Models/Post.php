@@ -37,6 +37,8 @@ class Post extends Model
         'likes_count',
         'tags',
         'categories',
+        'ranking_score',
+        'ranking_calculated_at',
     ];
 
     protected function casts(): array
@@ -51,6 +53,8 @@ class Post extends Model
             'views_count' => 'integer',
             'likes_count' => 'integer',
             'duration' => 'integer',
+            'ranking_score' => 'float',
+            'ranking_calculated_at' => 'datetime',
         ];
     }
 
