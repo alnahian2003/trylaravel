@@ -7,6 +7,7 @@ use App\Models\Source;
 use App\Services\Scraping\Contracts\ScrapableInterface;
 use App\Services\Scraping\Scrapers\Sites\CodecourseScraper;
 use App\Services\Scraping\Scrapers\Sites\SpatieScraper;
+use App\Services\Scraping\Scrapers\Sites\StitcherScraper;
 use App\Services\Scraping\Transformers\PostTransformer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,7 @@ class ScraperManager
     protected array $scrapers = [
         'codecourse' => CodecourseScraper::class,
         'spatie' => SpatieScraper::class,
+        'stitcher' => StitcherScraper::class,
     ];
 
     protected PostTransformer $transformer;
