@@ -174,10 +174,17 @@ class HomeController extends Controller
         }
 
         // Return posts in ranked order
-        return Post::query()
+        $query = Post::query()
             ->published()
-            ->whereIn('id', $postIds)
-            ->orderByRaw('FIELD(id, ' . implode(',', $postIds) . ')');
+            ->whereIn('id', $postIds);
+            
+        // Use CASE WHEN for SQLite compatibility instead of FIELD()
+        $orderCases = [];
+        foreach ($postIds as $index => $id) {
+            $orderCases[] = "WHEN id = {$id} THEN {$index}";
+        }
+        
+        return $query->orderByRaw('CASE ' . implode(' ', $orderCases) . ' END');
     }
 
     public function show(Post $post): Response
