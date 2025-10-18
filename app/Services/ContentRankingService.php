@@ -63,6 +63,7 @@ class ContentRankingService
     /**
      * Get ranked posts with source diversity for anonymous users
      * This method uses pre-calculated ranking scores for efficiency
+     * Ensures no source repeats within every 10-post window
      */
     public function getRankedPostsForAnonymousUser(int $limit = 50): EloquentCollection
     {
@@ -77,13 +78,12 @@ class ContentRankingService
     }
 
     /**
-     * Apply source diversity algorithm - max 2 consecutive posts from same source
+     * Apply source diversity algorithm - no source repetition within every 10-post window
      */
     public function applySourceDiversity(EloquentCollection $posts, int $limit): EloquentCollection
     {
         $result = new EloquentCollection;
-        $sourceTracker = [];
-        $consecutiveCount = [];
+        $deferredPosts = [];
 
         foreach ($posts as $post) {
             if ($result->count() >= $limit) {
@@ -92,58 +92,48 @@ class ContentRankingService
 
             $source = $this->extractDomain($post->source_url ?: 'unknown');
 
-            // Track consecutive posts from this source
-            if (! isset($consecutiveCount[$source])) {
-                $consecutiveCount[$source] = 0;
-            }
-
-            // Check if we can add this post (max 2 consecutive from same source)
+            // Check if this source already appears in the last 10 posts
             $canAdd = true;
-
-            if ($result->count() >= 2) {
-                $lastTwoPosts = $result->slice(-2);
-                $lastTwoSources = $lastTwoPosts->map(function ($p) {
+            if ($result->count() > 0) {
+                $windowSize = min(10, $result->count());
+                $recentPosts = $result->slice(-$windowSize);
+                
+                $recentSources = $recentPosts->map(function ($p) {
                     return $this->extractDomain($p->source_url ?: 'unknown');
                 })->all();
 
-                // If last 2 posts are from same source, don't add another from that source
-                if (count(array_unique($lastTwoSources)) === 1 && count($lastTwoSources) > 0 && isset($lastTwoSources[0]) && $lastTwoSources[0] === $source) {
+                if (in_array($source, $recentSources)) {
                     $canAdd = false;
                 }
             }
 
             if ($canAdd) {
                 $result->push($post);
-                $consecutiveCount[$source]++;
             } else {
-                // Store for potential later use if we have gaps
-                $sourceTracker[$source][] = $post;
+                // Store for potential later use
+                $deferredPosts[] = $post;
             }
         }
 
-        // Fill remaining spots with posts from deferred sources if we haven't reached the limit
-        if ($result->count() < $limit) {
-            foreach ($sourceTracker as $source => $deferredPosts) {
-                foreach ($deferredPosts as $post) {
-                    if ($result->count() >= $limit) {
-                        break 2;
-                    }
+        // Fill remaining spots with deferred posts if we haven't reached the limit
+        if ($result->count() < $limit && !empty($deferredPosts)) {
+            foreach ($deferredPosts as $post) {
+                if ($result->count() >= $limit) {
+                    break;
+                }
 
-                    // Check again if we can add it now
-                    $lastTwoPosts = $result->slice(-2);
-                    if ($lastTwoPosts->count() < 2) {
-                        $result->push($post);
+                $source = $this->extractDomain($post->source_url ?: 'unknown');
+                
+                // Check again if we can add it now (window may have shifted)
+                $windowSize = min(10, $result->count());
+                $recentPosts = $result->slice(-$windowSize);
+                
+                $recentSources = $recentPosts->map(function ($p) {
+                    return $this->extractDomain($p->source_url ?: 'unknown');
+                })->all();
 
-                        continue;
-                    }
-
-                    $lastTwoSources = $lastTwoPosts->map(function ($p) {
-                        return $this->extractDomain($p->source_url ?: 'unknown');
-                    })->all();
-
-                    if (count(array_unique($lastTwoSources)) !== 1 || count($lastTwoSources) === 0 || ! isset($lastTwoSources[0]) || $lastTwoSources[0] !== $source) {
-                        $result->push($post);
-                    }
+                if (!in_array($source, $recentSources)) {
+                    $result->push($post);
                 }
             }
         }
