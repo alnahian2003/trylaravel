@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\Scraping\Scrapers\Sites\CodecourseScraper;
 use App\Services\Scraping\Scrapers\Sites\LaravelNewsScraper;
+use App\Services\Scraping\Scrapers\Sites\MattStaufferScraper;
 use App\Services\Scraping\Scrapers\Sites\SpatieScraper;
 use App\Services\Scraping\Scrapers\Sites\StitcherScraper;
 use Illuminate\Console\Command;
@@ -106,6 +107,26 @@ class TestScraper extends Command
                 $this->warn('Laravel News scraping failed (expected due to bot protection): '.$e->getMessage());
                 $this->info('This is expected as Laravel News uses Cloudflare protection. The scraper is configured correctly.');
             }
+
+            // Test Matt Stauffer scraper
+            $this->info('');
+            $this->info('Testing Matt Stauffer scraper...');
+            $mattStaufferScraper = new MattStaufferScraper;
+            $this->info('Matt Stauffer scraper created successfully');
+
+            $mattStaufferConfig = $mattStaufferScraper->getConfiguration();
+            $this->info('Matt Stauffer configuration loaded: '.$mattStaufferConfig['name']);
+
+            // Test a single Matt Stauffer article
+            $mattStaufferTestUrl = 'https://mattstauffer.com/blog/is-the-authors-registry-from-the-authors-guild-legit';
+            $this->info("Testing Matt Stauffer article: {$mattStaufferTestUrl}");
+
+            $mattStaufferArticleData = $mattStaufferScraper->scrapeArticle($mattStaufferTestUrl);
+            $this->info('Matt Stauffer article scraped successfully!');
+            $this->info('Title: '.$mattStaufferArticleData->title);
+            $this->info('Author: '.$mattStaufferArticleData->author);
+            $this->info('Tags: '.implode(', ', $mattStaufferArticleData->tags));
+            $this->info('Content length: '.strlen($mattStaufferArticleData->content));
 
             return Command::SUCCESS;
 
