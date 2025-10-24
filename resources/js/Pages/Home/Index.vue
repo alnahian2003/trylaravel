@@ -203,10 +203,16 @@ const getPostTypeColors = (type) => {
 <template>
     <Head title="LaravelSense - Your Laravel Community Feed" />
 
-    <div class="antialiased bg-gray-50 font-sans min-h-screen">
+    <div
+        class="antialiased bg-gray-50 dark:bg-transparent font-sans min-h-screen relative w-full"
+    >
+        <div
+            class="absolute inset-0 -z-10 dark:bg-zinc-950 [background-image:radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(239,68,68,0.25),transparent_70%)]"
+        ></div>
+
         <!-- Header -->
         <header
-            class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200"
+            class="sticky top-0 z-50 bg-white/95 dark:bg-zinc-900/30 backdrop-blur-lg border-b border-gray-200 dark:border-gray-100/10"
         >
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
@@ -224,12 +230,14 @@ const getPostTypeColors = (type) => {
                             </svg>
                         </div>
                         <span
-                            class="text-xl font-bold text-gray-900 hidden sm:inline"
+                            class="text-xl font-bold text-gray-900 dark:text-zinc-100 hidden sm:inline"
                             >LaravelSense</span
                         >
-                        <span class="text-lg font-bold text-gray-900 sm:hidden"
-                            >LS</span
+                        <span
+                            class="text-lg font-bold text-gray-900 dark:text-zinc-100 sm:hidden"
                         >
+                            LS
+                        </span>
                     </div>
 
                     <!-- Search Bar - Hidden on mobile, shown on tablet+ -->
@@ -238,7 +246,7 @@ const getPostTypeColors = (type) => {
                             <input
                                 type="search"
                                 placeholder="Search Laravel content..."
-                                class="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all text-sm"
+                                class="w-full pl-12 pr-4 py-3 bg-gray-100 dark:bg-zinc-800/30 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-700 focus:bg-white dark:focus:bg-zinc-800 dark:text-zinc-200 transition-all text-sm dark:placeholder:text-gray-100/30"
                             />
                             <svg
                                 class="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -258,7 +266,7 @@ const getPostTypeColors = (type) => {
 
                     <!-- Mobile Search Button -->
                     <button
-                        class="md:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100"
+                        class="md:hidden p-2 text-gray-600 dark:text-zinc-500 dark:hover:text-gray-400 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800"
                     >
                         <svg
                             class="w-6 h-6"
@@ -282,7 +290,7 @@ const getPostTypeColors = (type) => {
                     >
                         <!-- Mobile Menu Button -->
                         <button
-                            class="md:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100"
+                            class="md:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100 dark:text-zinc-500 dark:hover:text-gray-400 dark:hover:bg-zinc-800"
                         >
                             <svg
                                 class="w-6 h-6"
@@ -314,12 +322,12 @@ const getPostTypeColors = (type) => {
                                 </button>
                                 <!-- Dropdown -->
                                 <div
-                                    class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+                                    class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-100/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
                                 >
                                     <div class="py-2">
                                         <Link
                                             :href="route('profile.edit')"
-                                            class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 text-sm"
+                                            class="flex items-center px-4 py-3 text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-900/50 text-sm"
                                         >
                                             <svg
                                                 class="w-4 h-4 mr-3 text-gray-400"
@@ -343,12 +351,12 @@ const getPostTypeColors = (type) => {
                                             Settings
                                         </Link>
                                         <div
-                                            class="border-t border-gray-200 my-2"
+                                            class="border-t border-gray-200 dark:border-gray-200/10 my-2"
                                         ></div>
                                         <Link
                                             :href="route('logout')"
                                             method="post"
-                                            class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 text-sm w-full text-left"
+                                            class="flex items-center px-4 py-3 text-red-600 dark:text-red-400 font-bold hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-200 text-sm w-full text-left"
                                         >
                                             <svg
                                                 class="w-4 h-4 mr-3"
@@ -389,7 +397,7 @@ const getPostTypeColors = (type) => {
                     <div v-else class="flex items-center space-x-2">
                         <Link
                             :href="route('login')"
-                            class="text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm px-3 py-2 rounded-lg hover:bg-gray-100"
+                            class="text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-gray-200 font-medium transition-colors text-sm px-4 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800"
                             >Login</Link
                         >
                         <Link
@@ -405,7 +413,7 @@ const getPostTypeColors = (type) => {
         </header>
 
         <!-- Main Content -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 z-100">
             <!-- Authenticated User Layout -->
             <div
                 v-if="isAuthenticated"
@@ -413,7 +421,7 @@ const getPostTypeColors = (type) => {
             >
                 <!-- Mobile Quick Actions Bar -->
                 <div
-                    class="lg:hidden bg-white rounded-xl border border-gray-200 p-4 mb-4"
+                    class="lg:hidden bg-white dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-zinc-100/10 dark:shadow-lg p-4 mb-4"
                 >
                     <div
                         class="flex items-center justify-between space-x-3 overflow-x-auto"
@@ -439,7 +447,7 @@ const getPostTypeColors = (type) => {
                         </button>
                         <Link
                             :href="route('library')"
-                            class="flex-shrink-0 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center space-x-2"
+                            class="flex-shrink-0 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-100/30 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors flex items-center space-x-2"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -458,7 +466,7 @@ const getPostTypeColors = (type) => {
                         </Link>
                         <Link
                             :href="route('liked-posts')"
-                            class="flex-shrink-0 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center space-x-2"
+                            class="flex-shrink-0 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-100/30 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors flex items-center space-x-2"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -477,7 +485,7 @@ const getPostTypeColors = (type) => {
                         </Link>
                         <Link
                             :href="route('sources.index')"
-                            class="flex-shrink-0 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center space-x-2"
+                            class="flex-shrink-0 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-100/30 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors flex items-center space-x-2"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -502,9 +510,11 @@ const getPostTypeColors = (type) => {
                     <div class="sticky top-24 space-y-6">
                         <!-- Quick Actions -->
                         <div
-                            class="bg-white rounded-xl border border-gray-200 p-6"
+                            class="bg-white dark:bg-zinc-800 dark:border-zinc-100/10 dark:text-zinc-100 rounded-xl border border-gray-200 p-6"
                         >
-                            <h3 class="font-bold text-gray-900 mb-4 text-lg">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-zinc-300 mb-4 text-lg"
+                            >
                                 Quick Actions
                             </h3>
                             <div class="space-y-3">
@@ -529,7 +539,7 @@ const getPostTypeColors = (type) => {
                                 </button>
                                 <Link
                                     :href="route('library')"
-                                    class="block w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center"
+                                    class="block w-full bg-gray-100 dark:bg-zinc-700/30 text-gray-700 dark:text-zinc-100/40 dark:hover:bg-zinc-900 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center"
                                 >
                                     <svg
                                         class="w-4 h-4 inline mr-2"
@@ -548,7 +558,7 @@ const getPostTypeColors = (type) => {
                                 </Link>
                                 <Link
                                     :href="route('liked-posts')"
-                                    class="block w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center"
+                                    class="block w-full bg-gray-100 text-gray-700 dark:bg-zinc-700/30 dark:text-zinc-100/40 dark:hover:bg-zinc-900 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center"
                                 >
                                     <svg
                                         class="w-4 h-4 inline mr-2"
@@ -576,64 +586,71 @@ const getPostTypeColors = (type) => {
 
                         <!-- Statistics -->
                         <div
-                            class="bg-white rounded-xl border border-gray-200 p-6"
+                            class="bg-white dark:bg-zinc-800 dark:border-zinc-100/10 dark:text-zinc-100 rounded-xl border border-gray-200 p-6"
                         >
-                            <h3 class="font-bold text-gray-900 mb-4 text-lg">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-zinc-300 mb-4 text-lg"
+                            >
                                 Content Stats
                             </h3>
                             <div v-if="stats" class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="text-sm font-medium text-gray-700"
+                                        class="text-sm font-medium text-gray-700 dark:text-zinc-400"
                                         >Blog Posts</span
                                     >
-                                    <span class="text-xs text-gray-500">{{
-                                        stats.posts_by_type.posts
-                                    }}</span>
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-zinc-500"
+                                        >{{ stats.posts_by_type.posts }}</span
+                                    >
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="text-sm font-medium text-gray-700"
+                                        class="text-sm font-medium text-gray-700 dark:text-zinc-400"
                                         >Videos</span
                                     >
-                                    <span class="text-xs text-gray-500">{{
-                                        stats.posts_by_type.videos
-                                    }}</span>
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-zinc-500"
+                                        >{{ stats.posts_by_type.videos }}</span
+                                    >
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="text-sm font-medium text-gray-700"
+                                        class="text-sm font-medium text-gray-700 dark:text-zinc-400"
                                         >Podcasts</span
                                     >
-                                    <span class="text-xs text-gray-500">{{
-                                        stats.posts_by_type.podcasts
-                                    }}</span>
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-zinc-500"
+                                        >{{
+                                            stats.posts_by_type.podcasts
+                                        }}</span
+                                    >
                                 </div>
                             </div>
                             <div v-else class="space-y-3">
                                 <!-- Loading skeleton for stats -->
                                 <div class="flex items-center justify-between">
                                     <div
-                                        class="h-4 bg-gray-200 rounded w-20 animate-pulse"
+                                        class="h-4 bg-gray-200 dark:bg-zinc-600 rounded w-20 animate-pulse"
                                     ></div>
                                     <div
-                                        class="h-3 bg-gray-200 rounded w-8 animate-pulse"
-                                    ></div>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div
-                                        class="h-4 bg-gray-200 rounded w-16 animate-pulse"
-                                    ></div>
-                                    <div
-                                        class="h-3 bg-gray-200 rounded w-8 animate-pulse"
+                                        class="h-3 bg-gray-200 dark:bg-zinc-600 rounded w-8 animate-pulse"
                                     ></div>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div
-                                        class="h-4 bg-gray-200 rounded w-18 animate-pulse"
+                                        class="h-4 bg-gray-200 dark:bg-zinc-600 rounded w-16 animate-pulse"
                                     ></div>
                                     <div
-                                        class="h-3 bg-gray-200 rounded w-8 animate-pulse"
+                                        class="h-3 bg-gray-200 dark:bg-zinc-600 rounded w-8 animate-pulse"
+                                    ></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div
+                                        class="h-4 bg-gray-200 dark:bg-zinc-600 rounded w-18 animate-pulse"
+                                    ></div>
+                                    <div
+                                        class="h-3 bg-gray-200 dark:bg-zinc-600 rounded w-8 animate-pulse"
                                     ></div>
                                 </div>
                             </div>
@@ -641,9 +658,11 @@ const getPostTypeColors = (type) => {
 
                         <!-- Trending -->
                         <div
-                            class="bg-white rounded-xl border border-gray-200 p-6"
+                            class="bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-100/10 p-6"
                         >
-                            <h3 class="font-bold text-gray-900 mb-4 text-lg">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-zinc-300 mb-4 text-lg"
+                            >
                                 Trending
                             </h3>
                             <div v-if="stats?.trending_tags" class="space-y-3">
@@ -656,10 +675,11 @@ const getPostTypeColors = (type) => {
                                     class="flex items-center justify-between"
                                 >
                                     <span
-                                        class="text-sm font-medium text-gray-700"
+                                        class="text-sm font-medium text-gray-700 dark:text-zinc-400"
                                         >#{{ tag.name }}</span
                                     >
-                                    <span class="text-xs text-gray-500"
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-zinc-500"
                                         >{{ tag.count }} posts</span
                                     >
                                 </div>
@@ -672,10 +692,10 @@ const getPostTypeColors = (type) => {
                                     class="flex items-center justify-between"
                                 >
                                     <div
-                                        class="h-4 bg-gray-200 rounded w-24 animate-pulse"
+                                        class="h-4 bg-gray-200 dark:bg-zinc-600 rounded w-24 animate-pulse"
                                     ></div>
                                     <div
-                                        class="h-3 bg-gray-200 rounded w-12 animate-pulse"
+                                        class="h-3 bg-gray-200 dark:bg-zinc-600 rounded w-12 animate-pulse"
                                     ></div>
                                 </div>
                             </div>
@@ -692,7 +712,7 @@ const getPostTypeColors = (type) => {
                             <article
                                 v-for="post in posts.data"
                                 :key="post.id"
-                                class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200"
+                                class="bg-white dark:bg-zinc-800/30 rounded-2xl border border-gray-200 dark:border-zinc-100/10 hover:shadow-lg transition-all duration-200"
                             >
                                 <!-- Video Thumbnail (if video) -->
                                 <div
@@ -700,7 +720,7 @@ const getPostTypeColors = (type) => {
                                     class="relative rounded-t-2xl overflow-hidden"
                                 >
                                     <div
-                                        class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+                                        class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-zinc-600 dark:to-zinc-700 flex items-center justify-center"
                                     >
                                         <img
                                             v-if="post.featured_image"
@@ -746,11 +766,11 @@ const getPostTypeColors = (type) => {
                                             class="flex items-center space-x-3"
                                         >
                                             <div
-                                                class="w-9 h-9 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center"
+                                                class="w-9 h-9 bg-gradient-to-br from-gray-400 to-gray-500 dark:from-zinc-700 dark:to-zinc-600 rounded-full flex items-center justify-center"
                                             >
                                                 <span
                                                     v-if="post.author.name"
-                                                    class="text-white font-semibold text-sm"
+                                                    class="text-white dark:text-zinc-300 font-semibold text-sm"
                                                 >
                                                     {{
                                                         post.author.name
@@ -769,7 +789,7 @@ const getPostTypeColors = (type) => {
                                             </div>
                                             <div>
                                                 <div
-                                                    class="font-semibold text-gray-900"
+                                                    class="font-semibold text-gray-900 dark:text-zinc-400 text-sm"
                                                 >
                                                     {{
                                                         post.author.name ||
@@ -777,7 +797,7 @@ const getPostTypeColors = (type) => {
                                                     }}
                                                 </div>
                                                 <div
-                                                    class="text-gray-500 text-sm"
+                                                    class="text-gray-500 dark:text-zinc-100/40 text-sm"
                                                 >
                                                     {{ post.published_at }}
                                                 </div>
@@ -794,10 +814,10 @@ const getPostTypeColors = (type) => {
                                                 @click="toggleBookmark(post)"
                                                 :class="
                                                     post.is_bookmarked
-                                                        ? 'text-blue-600'
-                                                        : 'text-gray-400 hover:text-blue-600'
+                                                        ? 'text-red-600'
+                                                        : 'text-gray-400 dark:text-zinc-500 hover:text-red-600'
                                                 "
-                                                class="p-3 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
+                                                class="p-3 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 active:scale-95"
                                                 title="Save for later"
                                             >
                                                 <svg
@@ -823,7 +843,7 @@ const getPostTypeColors = (type) => {
                                             <button
                                                 v-if="!post.is_seen"
                                                 @click="markAsSeen(post)"
-                                                class="p-3 text-gray-400 hover:text-green-600 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
+                                                class="p-3 text-gray-400 dark:text-zinc-500 hover:text-green-600 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 active:scale-95"
                                                 title="Mark as seen"
                                             >
                                                 <svg
@@ -845,7 +865,7 @@ const getPostTypeColors = (type) => {
                                             <button
                                                 v-if="post.is_seen"
                                                 @click="markAsUnseen(post)"
-                                                class="p-3 text-green-600 hover:text-gray-400 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
+                                                class="p-3 text-green-600 hover:text-gray-400 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 active:scale-95"
                                                 title="Mark as unseen"
                                             >
                                                 <svg
@@ -866,7 +886,7 @@ const getPostTypeColors = (type) => {
                                         :href="route('posts.show', post.slug)"
                                     >
                                         <h3
-                                            class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors"
+                                            class="text-xl font-bold text-gray-900 dark:text-zinc-300 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors"
                                         >
                                             {{ post.title }}
                                         </h3>
@@ -874,7 +894,7 @@ const getPostTypeColors = (type) => {
 
                                     <p
                                         v-if="post.excerpt"
-                                        class="text-gray-600 mb-6 leading-relaxed line-clamp-3"
+                                        class="text-gray-600 dark:text-zinc-100/40 mb-6 leading-relaxed line-clamp-3"
                                     >
                                         {{ post.excerpt }}
                                     </p>
@@ -927,23 +947,23 @@ const getPostTypeColors = (type) => {
                                         <span
                                             v-for="tag in post.tags.slice(0, 3)"
                                             :key="tag"
-                                            class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium"
+                                            class="bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-100/40 px-3 py-1.5 rounded-full text-xs font-medium"
                                         >
                                             {{ tag }}
                                         </span>
                                         <span
                                             v-if="post.duration"
-                                            class="text-gray-500 text-sm ml-auto"
+                                            class="text-gray-500 dark:text-zinc-100/40 text-sm ml-auto"
                                             >{{ post.duration }}</span
                                         >
                                     </div>
 
                                     <!-- Actions -->
                                     <div
-                                        class="flex items-center justify-between pt-4 border-t border-gray-100"
+                                        class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-zinc-100/10"
                                     >
                                         <div
-                                            class="flex items-center space-x-6 text-sm text-gray-500"
+                                            class="flex items-center space-x-6 text-sm text-gray-500 dark:text-zinc-500"
                                         >
                                             <!-- Like Button -->
                                             <button
@@ -984,8 +1004,8 @@ const getPostTypeColors = (type) => {
                                                 @click="toggleBookmark(post)"
                                                 :class="
                                                     post.is_bookmarked
-                                                        ? 'text-blue-500'
-                                                        : 'hover:text-blue-500'
+                                                        ? 'text-red-500'
+                                                        : 'hover:text-red-500'
                                                 "
                                                 class="flex items-center space-x-2 transition-colors"
                                             >
@@ -1031,7 +1051,7 @@ const getPostTypeColors = (type) => {
             >
                 <!-- Welcome Banner -->
                 <div
-                    class="lg:col-span-4 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-6 sm:p-8 text-white text-center"
+                    class="lg:col-span-4 bg-gradient-to-r from-red-500 to-red-600 dark:bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] dark:from-red-900 dark:via-red-800 dark:to-red-950 rounded-2xl p-6 sm:p-8 text-white text-center"
                 >
                     <h1 class="text-xl sm:text-2xl font-bold mb-2">
                         Welcome to LaravelSense
@@ -1063,15 +1083,17 @@ const getPostTypeColors = (type) => {
                     <div class="sticky top-24 space-y-6">
                         <!-- Guest Call to Action -->
                         <div
-                            class="bg-white rounded-xl border border-gray-200 p-6"
+                            class="bg-white dark:bg-zinc-800 dark:border-zinc-100/10 dark:text-zinc-100 rounded-xl border border-gray-200 p-6"
                         >
-                            <h3 class="font-bold text-gray-900 mb-4 text-lg">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-zinc-300 mb-4 text-lg"
+                            >
                                 Join the Community
                             </h3>
                             <div class="space-y-3">
                                 <Link
                                     :href="route('register')"
-                                    class="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center space-x-2"
+                                    class="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 text-xs"
                                 >
                                     <svg
                                         class="w-4 h-4"
@@ -1090,7 +1112,7 @@ const getPostTypeColors = (type) => {
                                 </Link>
                                 <Link
                                     :href="route('login')"
-                                    class="block w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center"
+                                    class="block w-full bg-gray-100 dark:bg-zinc-700/30 text-gray-700 dark:text-zinc-100/40 dark:hover:bg-zinc-900 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center text-xs"
                                 >
                                     Already have an account?
                                 </Link>
@@ -1099,64 +1121,71 @@ const getPostTypeColors = (type) => {
 
                         <!-- Statistics -->
                         <div
-                            class="bg-white rounded-xl border border-gray-200 p-6"
+                            class="bg-white dark:bg-zinc-800 dark:border-zinc-100/10 dark:text-zinc-100 rounded-xl border border-gray-200 p-6"
                         >
-                            <h3 class="font-bold text-gray-900 mb-4 text-lg">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-zinc-300 mb-4 text-lg"
+                            >
                                 Content Stats
                             </h3>
                             <div v-if="stats" class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="text-sm font-medium text-gray-700"
+                                        class="text-sm font-medium text-gray-700 dark:text-zinc-300"
                                         >Blog Posts</span
                                     >
-                                    <span class="text-xs text-gray-500">{{
-                                        stats.posts_by_type.posts
-                                    }}</span>
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-zinc-400"
+                                        >{{ stats.posts_by_type.posts }}</span
+                                    >
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="text-sm font-medium text-gray-700"
+                                        class="text-sm font-medium text-gray-700 dark:text-zinc-300"
                                         >Videos</span
                                     >
-                                    <span class="text-xs text-gray-500">{{
-                                        stats.posts_by_type.videos
-                                    }}</span>
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-zinc-400"
+                                        >{{ stats.posts_by_type.videos }}</span
+                                    >
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="text-sm font-medium text-gray-700"
+                                        class="text-sm font-medium text-gray-700 dark:text-zinc-300"
                                         >Podcasts</span
                                     >
-                                    <span class="text-xs text-gray-500">{{
-                                        stats.posts_by_type.podcasts
-                                    }}</span>
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-zinc-400"
+                                        >{{
+                                            stats.posts_by_type.podcasts
+                                        }}</span
+                                    >
                                 </div>
                             </div>
                             <div v-else class="space-y-3">
                                 <!-- Loading skeleton for stats -->
                                 <div class="flex items-center justify-between">
                                     <div
-                                        class="h-4 bg-gray-200 rounded w-20 animate-pulse"
+                                        class="h-4 bg-gray-200 dark:bg-zinc-500 rounded w-20 animate-pulse"
                                     ></div>
                                     <div
-                                        class="h-3 bg-gray-200 rounded w-8 animate-pulse"
-                                    ></div>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div
-                                        class="h-4 bg-gray-200 rounded w-16 animate-pulse"
-                                    ></div>
-                                    <div
-                                        class="h-3 bg-gray-200 rounded w-8 animate-pulse"
+                                        class="h-3 bg-gray-200 dark:bg-zinc-500 rounded w-8 animate-pulse"
                                     ></div>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div
-                                        class="h-4 bg-gray-200 rounded w-18 animate-pulse"
+                                        class="h-4 bg-gray-200 dark:bg-zinc-500 rounded w-16 animate-pulse"
                                     ></div>
                                     <div
-                                        class="h-3 bg-gray-200 rounded w-8 animate-pulse"
+                                        class="h-3 bg-gray-200 dark:bg-zinc-500 rounded w-8 animate-pulse"
+                                    ></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div
+                                        class="h-4 bg-gray-200 dark:bg-zinc-500 rounded w-18 animate-pulse"
+                                    ></div>
+                                    <div
+                                        class="h-3 bg-gray-200 dark:bg-zinc-500 rounded w-8 animate-pulse"
                                     ></div>
                                 </div>
                             </div>
@@ -1164,9 +1193,11 @@ const getPostTypeColors = (type) => {
 
                         <!-- Trending -->
                         <div
-                            class="bg-white rounded-xl border border-gray-200 p-6"
+                            class="bg-white dark:bg-zinc-800 dark:border-zinc-100/10 dark:text-zinc-100 rounded-xl border border-gray-200 p-6"
                         >
-                            <h3 class="font-bold text-gray-900 mb-4 text-lg">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-zinc-300 mb-4 text-lg"
+                            >
                                 Trending
                             </h3>
                             <div v-if="stats?.trending_tags" class="space-y-3">
@@ -1179,10 +1210,11 @@ const getPostTypeColors = (type) => {
                                     class="flex items-center justify-between"
                                 >
                                     <span
-                                        class="text-sm font-medium text-gray-700"
+                                        class="text-sm font-medium text-gray-700 dark:text-zinc-400"
                                         >#{{ tag.name }}</span
                                     >
-                                    <span class="text-xs text-gray-500"
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-zinc-500"
                                         >{{ tag.count }} posts</span
                                     >
                                 </div>
@@ -1195,10 +1227,10 @@ const getPostTypeColors = (type) => {
                                     class="flex items-center justify-between"
                                 >
                                     <div
-                                        class="h-4 bg-gray-200 rounded w-24 animate-pulse"
+                                        class="h-4 bg-gray-200 dark:bg-zinc-500 rounded w-24 animate-pulse"
                                     ></div>
                                     <div
-                                        class="h-3 bg-gray-200 rounded w-12 animate-pulse"
+                                        class="h-3 bg-gray-200 dark:bg-zinc-500 rounded w-12 animate-pulse"
                                     ></div>
                                 </div>
                             </div>
@@ -1215,7 +1247,7 @@ const getPostTypeColors = (type) => {
                             <article
                                 v-for="post in posts.data"
                                 :key="post.id"
-                                class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200"
+                                class="bg-white dark:bg-zinc-800/30 rounded-2xl border border-gray-200 dark:border-zinc-100/10 hover:shadow-lg transition-all duration-200"
                             >
                                 <!-- Video Thumbnail (if video) -->
                                 <div
@@ -1269,11 +1301,11 @@ const getPostTypeColors = (type) => {
                                             class="flex items-center space-x-3"
                                         >
                                             <div
-                                                class="w-9 h-9 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center"
+                                                class="w-9 h-9 bg-gradient-to-br from-gray-400 to-gray-500 dark:from-zinc-700 dark:to-zinc-600 rounded-full flex items-center justify-center"
                                             >
                                                 <span
                                                     v-if="post.author.name"
-                                                    class="text-white font-semibold text-sm"
+                                                    class="text-white dark:text-zinc-300 font-semibold text-sm"
                                                 >
                                                     {{
                                                         post.author.name
@@ -1292,7 +1324,7 @@ const getPostTypeColors = (type) => {
                                             </div>
                                             <div>
                                                 <div
-                                                    class="font-semibold text-gray-900"
+                                                    class="font-semibold text-gray-900 dark:text-zinc-400 text-sm"
                                                 >
                                                     {{
                                                         post.author.name ||
@@ -1300,7 +1332,7 @@ const getPostTypeColors = (type) => {
                                                     }}
                                                 </div>
                                                 <div
-                                                    class="text-gray-500 text-sm"
+                                                    class="text-gray-500 dark:text-zinc-100/40 text-sm"
                                                 >
                                                     {{ post.published_at }}
                                                 </div>
@@ -1314,7 +1346,7 @@ const getPostTypeColors = (type) => {
                                             <!-- Bookmark Button -->
                                             <button
                                                 @click="showGuestPrompt"
-                                                class="p-3 text-gray-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
+                                                class="text-gray-400 dark:text-zinc-500 hover:text-red-600 p-3 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 active:scale-95"
                                                 title="Sign up to save posts"
                                             >
                                                 <svg
@@ -1335,7 +1367,7 @@ const getPostTypeColors = (type) => {
                                             <!-- Mark as Seen Button -->
                                             <button
                                                 @click="showGuestPrompt"
-                                                class="p-3 text-gray-400 hover:text-green-600 transition-colors rounded-lg hover:bg-gray-50 active:scale-95"
+                                                class="p-3 text-gray-400 dark:text-zinc-500 hover:text-green-600 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 active:scale-95"
                                                 title="Sign up to track reading progress"
                                             >
                                                 <svg
@@ -1360,7 +1392,7 @@ const getPostTypeColors = (type) => {
                                         :href="route('posts.show', post.slug)"
                                     >
                                         <h3
-                                            class="text-xl font-bold text-gray-900 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors"
+                                            class="text-xl font-bold text-gray-900 dark:text-zinc-300 mb-4 leading-tight hover:text-red-600 cursor-pointer transition-colors"
                                         >
                                             {{ post.title }}
                                         </h3>
@@ -1368,7 +1400,7 @@ const getPostTypeColors = (type) => {
 
                                     <p
                                         v-if="post.excerpt"
-                                        class="text-gray-600 mb-6 leading-relaxed line-clamp-3"
+                                        class="text-gray-600 dark:text-zinc-100/40 mb-6 leading-relaxed line-clamp-3"
                                     >
                                         {{ post.excerpt }}
                                     </p>
@@ -1421,7 +1453,7 @@ const getPostTypeColors = (type) => {
                                         <span
                                             v-for="tag in post.tags.slice(0, 3)"
                                             :key="tag"
-                                            class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium"
+                                            class="bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-zinc-100/40 px-3 py-1.5 rounded-full text-xs font-medium"
                                         >
                                             {{ tag }}
                                         </span>
@@ -1434,7 +1466,7 @@ const getPostTypeColors = (type) => {
 
                                     <!-- Actions -->
                                     <div
-                                        class="flex items-center justify-between pt-4 border-t border-gray-100"
+                                        class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-zinc-100/10"
                                     >
                                         <div
                                             class="flex items-center space-x-6 text-sm text-gray-500"
